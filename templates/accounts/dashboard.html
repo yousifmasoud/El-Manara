@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% load i18n humanize %}
+
+{% block title %}{% trans 'Dashboard — El-Manara Academy' %}{% endblock %}
+
+{% block content %}
+<section class="section-sm">
+  <div class="container">
+    <h1 style="font-size:1.8rem;font-weight:800;margin-block-end:1.75rem;">
+      {% trans 'Welcome,' %} {{ user.first_name|default:user.username }} 👋
+    </h1>
+
+    {% if profile.is_student and student %}
+    <!-- ══ STUDENT DASHBOARD ══════════════════════════════════ -->
+    <div class="dashboard-grid">
+      <aside class="dash-sidebar">
+        <h3 style="font-weight:700;margin-block-end:1rem;">{% trans 'Your Account' %}</h3>
+        <p style="font-size:.88rem;color:var(--text-muted);">{{ user.email }}</p>
+        <p style="font-size:.82rem;color:var(--text-muted);margin-block-start:.25rem;">{% trans 'Role:' %} {{ profile.get_role_display }}</p>
+        <hr style="border-color:var(--border);margin-block:1rem;" />
+        <p style="font-size:.85rem;font-weight:700;">{% trans 'Referral Code' %}</p>
+        <div style="display:flex;align-items:center;gap:.5rem;margin-block-start:.5rem;">
+          <code style="font-size:1rem;font-weight:800;color:var(--accent);">{{ student.referral_code }}</code>
+          <button id="copy-referral" data-code="{{ student.referral_code }}" class="btn btn-outline" style="padding:.25rem .6rem;font-size:.78rem;">{% trans 'Copy' %}</button>
+        </div>
+        <p style="font-size:.78rem;color:var(--text-muted);margin-block-start:.5rem;">{% trans 'Earn 2 free hours per successful referral (max 4/month).' %}</p>
+      </aside>
+
+      <div class="dash-main">
+        <!-- Stats row -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;">
+          <div class="stat-card">
+            <div class="stat-icon">⏱️</div>
+            <div>
+              <div class="stat-value">{{ student.hourly_balance }}</div>
+              <div class="stat-label">{% trans 'Hours Balance' %}</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🎁</div>
+            <div>
+              <div class="stat-value">{{ referrals|length }}</div>
+              <div class="stat-label">{% trans 'Total Referrals' %}</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">✅</div>
+            <div>
+              <div class="stat-value">{{ referrals|dictsort:"status"|length }}</div>
+              <div class="stat-label">{% trans 'Purchases' %}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Purchase CTA -->
+        <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+          <a href="{% url 'packages' %}" class="btn btn-primary" id="dash-buy-hours">{% trans 'Buy More Hours' %}</a>
+        </div>
+
+        <!-- Recent purchases -->
+        {% if purchases %}
+        <div style="background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius);padding:1.5rem;">
+          <h3 style="font-weight:700;margin-block-end:1rem;">{% trans 'Recent Purchases' %}</h3>
+          <table style="inline-size:100%;border-collapse:collapse;font-size:.88rem;">
+            <thead>
+              <tr style="border-block-end:2px solid var(--border);">
+                <th style="text-align:start;padding-block:.5rem;">{% trans 'Hours' %}</th>
+                <th style="text-align:start;padding-block:.5rem;">{% trans 'Price' %}</th>
+                <th style="text-align:start;padding-block:.5rem;">{% trans 'Date' %}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for p in purchases %}
+              <tr style="border-block-end:1px solid var(--border);">
+                <td style="padding-block:.5rem;">{{ p.hours_at_purchase }}h</td>
+                <td style="padding-block:.5rem;">${{ p.price_at_purchase }}</td>
+                <td style="padding-block:.5rem;">{{ p.purchased_at|date:"d M Y" }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% endif %}
+
+        <!-- Referrals -->
+        {% if referrals %}
+        <div style="background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius);padding:1.5rem;">
+          <h3 style="font-weight:700;margin-block-end:1rem;">{% trans 'Referral History' %}</h3>
+          <table style="inline-size:100%;border-collapse:collapse;font-size:.88rem;">
+            <thead>
+              <tr style="border-block-end:2px solid var(--border);">
+                <th style="text-align:start;padding-block:.5rem;">{% trans 'Referred User' %}</th>
+                <th style="text-align:start;padding-block:.5rem;">{% trans 'Status' %}</th>
+                <th style="text-align:start;padding-block:.5rem;">{% trans 'Reward' %}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for r in referrals %}
+              <tr style="border-block-end:1px solid var(--border);">
+                <td style="padding-block:.5rem;">{{ r.referred_user.profile.user.get_full_name|default:r.referred_user.profile.user.username }}</td>
+                <td style="padding-block:.5rem;">
+                  <span style="padding:.15rem .5rem;border-radius:99px;font-size:.75rem;font-weight:700;
+                    background:{% if r.status == 'completed' %}rgba(16,185,129,.12){% elif r.status == 'expired' %}rgba(239,68,68,.1){% else %}rgba(0,180,180,.1){% endif %};
+                    color:{% if r.status == 'completed' %}#059669{% elif r.status == 'expired' %}#dc2626{% else %}var(--accent-dark){% endif %};">
+                    {{ r.get_status_display }}
+                  </span>
+                </td>
+                <td style="padding-block:.5rem;">{% if r.reward_granted %}+{{ r.reward_hours }}h{% else %}—{% endif %}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    {% elif profile.is_teacher and teacher %}
+    <!-- ══ TEACHER DASHBOARD ══════════════════════════════════ -->
+    <div class="dashboard-grid">
+      <aside class="dash-sidebar">
+        <h3 style="font-weight:700;margin-block-end:1rem;">{% trans 'Teacher Profile' %}</h3>
+        <p style="font-size:.88rem;color:var(--text-muted);">{{ user.email }}</p>
+        <hr style="border-color:var(--border);margin-block:1rem;" />
+        <p><strong>{% trans 'Rate:' %}</strong> ${{ teacher.hourly_rate }}/hr</p>
+        <p style="margin-block-start:.5rem;"><strong>{% trans 'Status:' %}</strong>
+          {% if teacher.is_verified %}✅ {% trans 'Verified' %}{% else %}⏳ {% trans 'Pending Verification' %}{% endif %}
+        </p>
+      </aside>
+      <div class="dash-main">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;">
+          <div class="stat-card"><div class="stat-icon">⭐</div><div><div class="stat-value">{{ teacher.rating }}</div><div class="stat-label">{% trans 'Rating' %}</div></div></div>
+          <div class="stat-card"><div class="stat-icon">🎓</div><div><div class="stat-value">{{ teacher.total_sessions }}</div><div class="stat-label">{% trans 'Sessions' %}</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    {% elif profile.is_parent and parent %}
+    <!-- ══ PARENT DASHBOARD ════════════════════════════════════ -->
+    <div class="dashboard-grid">
+      <aside class="dash-sidebar">
+        <h3 style="font-weight:700;margin-block-end:1rem;">{% trans 'Parent Account' %}</h3>
+        <p style="font-size:.88rem;color:var(--text-muted);">{{ user.email }}</p>
+        <hr style="border-color:var(--border);margin-block:1rem;" />
+        <p style="font-size:.85rem;color:var(--text-muted);">
+          {% blocktrans count num=children|length %}{{ num }} child linked{% plural %}{{ num }} children linked{% endblocktrans %}
+        </p>
+      </aside>
+      <div class="dash-main">
+        <h3 style="font-weight:700;">{% trans "Children's Balances" %}</h3>
+        {% for child in children %}
+        <div class="stat-card">
+          <div class="stat-icon">🎓</div>
+          <div>
+            <div class="stat-value">{{ child.hourly_balance }}h</div>
+            <div class="stat-label">{{ child.profile.user.get_full_name|default:child.profile.user.username }}</div>
+          </div>
+        </div>
+        {% empty %}
+        <p style="color:var(--text-muted);">{% trans 'No children linked yet. Ask your child to add you from their account.' %}</p>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+</section>
+{% endblock %}

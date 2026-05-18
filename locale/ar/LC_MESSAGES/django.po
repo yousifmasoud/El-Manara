@@ -1,0 +1,418 @@
+# Arabic translation for El-Manara Academy
+# Run: python manage.py compilemessages  (requires: sudo apt install gettext)
+msgid ""
+msgstr ""
+"Project-Id-Version: El-Manara 1.0\n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=n==0?0:n==1?1:n==2?2:n%100>=3&&n%100<=10?3:n%100>=11&&n%100<=99?4:5;\n"
+
+msgid "El-Manara Academy"
+msgstr "أكاديمية المنارة"
+
+msgid "El-Manara Academy — Learn Without Limits"
+msgstr "أكاديمية المنارة — تعلّم بلا حدود"
+
+msgid "El-Manara Academy — premium tutoring for SAT, IELTS, TOEFL and all school subjects."
+msgstr "أكاديمية المنارة — تدريس متميز في SAT وIELTS وTOEFL وجميع المواد الدراسية."
+
+msgid "Main navigation"
+msgstr "التنقل الرئيسي"
+
+msgid "Home"
+msgstr "الرئيسية"
+
+msgid "Packages"
+msgstr "الباقات"
+
+msgid "About Us"
+msgstr "من نحن"
+
+msgid "Contact Us"
+msgstr "اتصل بنا"
+
+msgid "Dashboard"
+msgstr "لوحة التحكم"
+
+msgid "Logout"
+msgstr "تسجيل الخروج"
+
+msgid "Login"
+msgstr "تسجيل الدخول"
+
+msgid "Get Started"
+msgstr "ابدأ الآن"
+
+msgid "Language selector"
+msgstr "اختيار اللغة"
+
+msgid "Toggle dark mode"
+msgstr "تبديل الوضع الليلي"
+
+msgid "Open menu"
+msgstr "فتح القائمة"
+
+msgid "All rights reserved."
+msgstr "جميع الحقوق محفوظة."
+
+msgid "Quick Links"
+msgstr "روابط سريعة"
+
+msgid "Follow Us"
+msgstr "تابعنا"
+
+msgid "Get in Touch"
+msgstr "تواصل معنا"
+
+msgid "Trusted by 5,000+ Students"
+msgstr "يثق به أكثر من 5000 طالب"
+
+msgid "Learn From The"
+msgstr "تعلّم من"
+
+msgid "Best Tutors"
+msgstr "أفضل المعلمين"
+
+msgid "On Your Schedule"
+msgstr "وفق جدولك"
+
+msgid "El-Manara connects you with verified expert tutors for every subject — from daily coursework to high-stakes international exams."
+msgstr "تربطك المنارة بمعلمين خبراء معتمدين في كل مادة — من الدروس اليومية إلى الامتحانات الدولية المهمة."
+
+msgid "Start Learning Today"
+msgstr "ابدأ التعلم اليوم"
+
+msgid "View Packages"
+msgstr "عرض الباقات"
+
+msgid "Browse Subjects"
+msgstr "تصفح المواد"
+
+msgid "Find expert tutors across every discipline."
+msgstr "ابحث عن معلمين خبراء في كل تخصص."
+
+msgid "Subjects coming soon."
+msgstr "المواد قادمة قريباً."
+
+msgid "International Test Preparation"
+msgstr "التحضير للاختبارات الدولية"
+
+msgid "Premium coaching for the exams that open doors worldwide."
+msgstr "تدريب متميز للامتحانات التي تفتح الأبواب حول العالم."
+
+msgid "Find a Tutor"
+msgstr "ابحث عن معلم"
+
+msgid "Flexible Hour Packages"
+msgstr "باقات ساعات مرنة"
+
+msgid "Buy blocks of tutoring time at a discount. The more you learn, the more you save."
+msgstr "اشترِ كتلاً من وقت الدراسة بسعر مخفّض. كلما تعلّمت أكثر، وفّرت أكثر."
+
+msgid "See All Packages & Pricing"
+msgstr "عرض جميع الباقات والأسعار"
+
+msgid "Hour Packages — El-Manara Academy"
+msgstr "باقات الساعات — أكاديمية المنارة"
+
+msgid "Purchase blocks of tutoring hours from 8 to 64 hours at discounted rates."
+msgstr "اشترِ كتلاً من ساعات الدراسة من 8 إلى 64 ساعة بأسعار مخفّضة."
+
+msgid "Choose Your Learning Package"
+msgstr "اختر باقتك التعليمية"
+
+msgid "Lock in a block of tutoring hours. The more hours you buy, the lower your cost per session."
+msgstr "احجز كتلة من ساعات الدراسة. كلما اشتريت أكثر، انخفضت تكلفة كل جلسة."
+
+msgid "tutoring hours"
+msgstr "ساعات تعليمية"
+
+msgid "Select number of hours"
+msgstr "اختر عدد الساعات"
+
+msgid "Purchase This Package"
+msgstr "شراء هذه الباقة"
+
+msgid "Sign Up to Purchase"
+msgstr "سجّل للشراء"
+
+msgid "Save"
+msgstr "وفّر"
+
+msgid "hr"
+msgstr "س"
+
+msgid "Best Value"
+msgstr "أفضل قيمة"
+
+msgid "Packages coming soon. Please check back later."
+msgstr "الباقات قادمة قريباً. يرجى التحقق لاحقاً."
+
+msgid "Refer a Friend, Earn Free Hours!"
+msgstr "أحِل صديقاً واكسب ساعات مجانية!"
+
+msgid "Share your unique referral code. When your friend buys any package within 30 days, you both benefit — up to 4 referrals per month."
+msgstr "شارك رمز إحالتك الفريد. عندما يشتري صديقك أي باقة خلال 30 يوماً، يستفيد الطرفان — حتى 4 إحالات شهرياً."
+
+msgid "Copy"
+msgstr "نسخ"
+
+msgid "Create Account to Get Your Code"
+msgstr "أنشئ حساباً للحصول على رمزك"
+
+msgid "How It Works"
+msgstr "كيف يعمل"
+
+msgid "Choose a Subject"
+msgstr "اختر مادة"
+
+msgid "Browse subjects or select a test-prep track."
+msgstr "تصفح المواد أو اختر مسار التحضير للاختبار."
+
+msgid "Match a Tutor"
+msgstr "تطابق مع معلم"
+
+msgid "We match you with a verified expert that fits your schedule."
+msgstr "نطابقك مع خبير معتمد يناسب جدولك."
+
+msgid "Start Learning"
+msgstr "ابدأ التعلم"
+
+msgid "Book sessions from your hour balance whenever you are ready."
+msgstr "احجز جلسات من رصيد ساعاتك متى كنت مستعداً."
+
+msgid "Welcome Back"
+msgstr "مرحباً بعودتك"
+
+msgid "Log in to continue your learning journey."
+msgstr "سجّل دخولك لمتابعة رحلتك التعليمية."
+
+msgid "Username"
+msgstr "اسم المستخدم"
+
+msgid "Password"
+msgstr "كلمة المرور"
+
+msgid "Confirm Password"
+msgstr "تأكيد كلمة المرور"
+
+msgid "Log In"
+msgstr "تسجيل الدخول"
+
+msgid "Don't have an account?"
+msgstr "ليس لديك حساب؟"
+
+msgid "Register here"
+msgstr "سجّل هنا"
+
+msgid "Create Student Account"
+msgstr "إنشاء حساب طالب"
+
+msgid "Start your learning journey today."
+msgstr "ابدأ رحلتك التعليمية اليوم."
+
+msgid "Student"
+msgstr "طالب"
+
+msgid "Teacher"
+msgstr "معلم"
+
+msgid "Parent"
+msgstr "ولي أمر"
+
+msgid "First Name"
+msgstr "الاسم الأول"
+
+msgid "Last Name"
+msgstr "اسم العائلة"
+
+msgid "Email Address"
+msgstr "البريد الإلكتروني"
+
+msgid "Referral Code (optional)"
+msgstr "رمز الإحالة (اختياري)"
+
+msgid "Enter referral code"
+msgstr "أدخل رمز الإحالة"
+
+msgid "Grade Level"
+msgstr "المستوى الدراسي"
+
+msgid "e.g. Grade 10 / Year 12"
+msgstr "مثال: الصف العاشر / السنة 12"
+
+msgid "Create Account"
+msgstr "إنشاء حساب"
+
+msgid "Already have an account?"
+msgstr "هل لديك حساب بالفعل؟"
+
+msgid "Log in"
+msgstr "تسجيل الدخول"
+
+msgid "Join as a Teacher"
+msgstr "انضم كمعلم"
+
+msgid "Share your expertise and help students excel."
+msgstr "شارك خبرتك وساعد الطلاب على التميز."
+
+msgid "Short Biography"
+msgstr "نبذة مختصرة"
+
+msgid "Tell students about yourself…"
+msgstr "أخبر الطلاب عن نفسك…"
+
+msgid "Hourly Rate (USD)"
+msgstr "الأجر بالساعة (درهم)"
+
+msgid "Apply as Teacher"
+msgstr "التقديم كمعلم"
+
+msgid "Create Parent Account"
+msgstr "إنشاء حساب ولي أمر"
+
+msgid "Monitor your children's progress and manage their sessions."
+msgstr "راقب تقدم أطفالك وأدر جلساتهم."
+
+msgid "Welcome,"
+msgstr "مرحباً،"
+
+msgid "Your Account"
+msgstr "حسابك"
+
+msgid "Role:"
+msgstr "الدور:"
+
+msgid "Referral Code"
+msgstr "رمز الإحالة"
+
+msgid "Earn 2 free hours per successful referral (max 4/month)."
+msgstr "اكسب ساعتين مجانيتين لكل إحالة ناجحة (حد أقصى 4 شهرياً)."
+
+msgid "Hours Balance"
+msgstr "رصيد الساعات"
+
+msgid "Total Referrals"
+msgstr "إجمالي الإحالات"
+
+msgid "Purchases"
+msgstr "المشتريات"
+
+msgid "Buy More Hours"
+msgstr "شراء المزيد من الساعات"
+
+msgid "Recent Purchases"
+msgstr "المشتريات الأخيرة"
+
+msgid "Hours"
+msgstr "الساعات"
+
+msgid "Price"
+msgstr "السعر"
+
+msgid "Date"
+msgstr "التاريخ"
+
+msgid "Referral History"
+msgstr "سجل الإحالات"
+
+msgid "Referred User"
+msgstr "المستخدم المُحال"
+
+msgid "Status"
+msgstr "الحالة"
+
+msgid "Reward"
+msgstr "المكافأة"
+
+msgid "Teacher Profile"
+msgstr "ملف المعلم"
+
+msgid "Rate:"
+msgstr "الأجر:"
+
+msgid "Status:"
+msgstr "الحالة:"
+
+msgid "Verified"
+msgstr "موثق"
+
+msgid "Pending Verification"
+msgstr "قيد التحقق"
+
+msgid "Rating"
+msgstr "التقييم"
+
+msgid "Sessions"
+msgstr "الجلسات"
+
+msgid "Parent Account"
+msgstr "حساب ولي الأمر"
+
+msgid "Children's Balances"
+msgstr "أرصدة الأطفال"
+
+msgid "No children linked yet. Ask your child to add you from their account."
+msgstr "لا يوجد أطفال مرتبطون بعد. اطلب من طفلك إضافتك من حسابه."
+
+msgid "Invalid username or password."
+msgstr "اسم المستخدم أو كلمة المرور غير صحيحة."
+
+msgid "Welcome to El-Manara Academy!"
+msgstr "مرحباً بك في أكاديمية المنارة!"
+
+msgid "Welcome, Teacher! Your profile is pending verification."
+msgstr "مرحباً أيها المعلم! ملفك الشخصي قيد التحقق."
+
+msgid "Passwords do not match."
+msgstr "كلمات المرور غير متطابقة."
+
+msgid "Only students can purchase packages."
+msgstr "فقط الطلاب يمكنهم شراء الباقات."
+
+msgid "Pending"
+msgstr "قيد الانتظار"
+
+msgid "Completed"
+msgstr "مكتملة"
+
+msgid "Expired"
+msgstr "منتهية"
+
+msgid "About El-Manara Academy"
+msgstr "عن أكاديمية المنارة"
+
+msgid "Our Mission"
+msgstr "مهمتنا"
+
+msgid "Our Vision"
+msgstr "رؤيتنا"
+
+msgid "Our Values"
+msgstr "قيمنا"
+
+msgid "Send us a Message"
+msgstr "أرسل لنا رسالة"
+
+msgid "Your Name"
+msgstr "اسمك"
+
+msgid "Your Email"
+msgstr "بريدك الإلكتروني"
+
+msgid "Message"
+msgstr "الرسالة"
+
+msgid "Send Message"
+msgstr "إرسال الرسالة"
+
+msgid "Find Us On Social Media"
+msgstr "تجدنا على وسائل التواصل الاجتماعي"
+
+msgid "child linked"
+msgstr "طفل مرتبط"
+
+msgid "children linked"
+msgstr "أطفال مرتبطون"

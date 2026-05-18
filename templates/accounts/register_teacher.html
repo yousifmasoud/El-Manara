@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans 'Teacher Registration — El-Manara Academy' %}{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+  <div class="auth-card">
+    <h1>{% trans 'Join as a Teacher' %}</h1>
+    <p class="subtitle">{% trans 'Share your expertise and help students excel.' %}</p>
+
+    <div class="role-tabs" role="tablist">
+      <a class="role-tab" href="{% url 'register_student' %}" id="tab-student">🎓 {% trans 'Student' %}</a>
+      <a class="role-tab active" href="{% url 'register_teacher' %}" id="tab-teacher">📚 {% trans 'Teacher' %}</a>
+      <a class="role-tab" href="{% url 'register_parent' %}" id="tab-parent">👨‍👩‍👧 {% trans 'Parent' %}</a>
+    </div>
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="form-group">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}<ul class="errorlist">{% for e in field.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+        </div>
+      {% endfor %}
+      <button type="submit" class="btn btn-primary" style="inline-size:100%;justify-content:center;margin-block-start:.5rem;" id="register-teacher-submit">
+        {% trans 'Apply as Teacher' %} →
+      </button>
+    </form>
+
+    <p style="text-align:center;margin-block-start:1.25rem;font-size:.87rem;color:var(--text-muted);">
+      {% trans 'Already have an account?' %}
+      <a href="{% url 'login' %}" style="font-weight:700;">{% trans 'Log in' %}</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

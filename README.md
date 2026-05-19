@@ -14,7 +14,7 @@ Ensure you have Python 3 installed on your system.
 
 Open a terminal and navigate to the root directory of the project:
 ```bash
-cd /home/yousif-masoud/El-Manara
+cd /El-Manara
 ```
 
 ### 2. Activate Virtual Environment
@@ -26,7 +26,29 @@ source venv/bin/activate
 ```
 *(Your terminal prompt should change to show `(venv)` at the beginning).*
 
-### 3. Run the Development Server
+### 3. Initial Setup (First Time Only)
+
+If this is your first time setting up the project, you need to prepare the database and translations. Run the following commands in order:
+
+```bash
+# 1. Create the new migration for price_aed field
+python manage.py makemigrations accounts courses
+
+# 2. Apply all migrations
+python manage.py migrate
+
+# 3. Seed subjects + packages
+python manage.py seed_data
+
+# 4. Compile Arabic translations (needs gettext)
+sudo apt install gettext -y
+python manage.py compilemessages
+
+# 5. Create superuser
+python manage.py createsuperuser
+```
+
+### 4. Run the Development Server
 
 Start the Django development server by running:
 
@@ -34,7 +56,7 @@ Start the Django development server by running:
 python manage.py runserver
 ```
 
-### 4. Access the Site
+### 5. Access the Site
 
 Open your web browser and navigate to:
 - **English version (LTR):** [http://127.0.0.1:8000/en/](http://127.0.0.1:8000/en/)

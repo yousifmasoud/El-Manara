@@ -17,13 +17,16 @@ Open a terminal and navigate to the root directory of the project:
 cd /El-Manara
 ```
 
-### 2. Activate Virtual Environment
+### 2. Create & Activate Virtual Environment
 
-A Python virtual environment is included in the project directory. Activate it using the following command:
+Create a virtual environment and install the project dependencies from `requirements.txt`:
 
 ```bash
+python -m venv venv
 source venv/bin/activate
+pip install -r requirements.txt
 ```
+
 *(Your terminal prompt should change to show `(venv)` at the beginning).*
 
 ### 3. Initial Setup (First Time Only)

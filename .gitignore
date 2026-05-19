@@ -1,0 +1,27 @@
+# Virtual environment
+venv/
+env/
+ENV/
+
+# Environment variables (contains secrets)
+.env
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Django local database
+db.sqlite3
+db.sqlite3-journal
+
+# Django static files collected for production
+staticfiles/
+
+# Compiled translation files (regenerated with compilemessages)
+*.mo
+
+# OS files
+.DS_Store
+Thumbs.db

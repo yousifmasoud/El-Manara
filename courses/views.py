@@ -8,8 +8,9 @@ from .models import HourlyPackage, Purchase, Subject
 
 
 def _template(lang, name):
-    """Return 'ar/<name>' for Arabic requests, plain '<name>' otherwise."""
-    return f"ar/{name}" if (lang or "").startswith("ar") else name
+    """Return 'ar/<name>' for Arabic, 'en/<name>' for English."""
+    prefix = "ar" if (lang or "").startswith("ar") else "en"
+    return f"{prefix}/{name}"
 
 
 def packages_view(request):

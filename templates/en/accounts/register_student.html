@@ -1,18 +1,17 @@
-{% extends "base.html" %}
-{% load i18n %}
+{% extends "en/base.html" %}
 
-{% block title %}{% trans 'Student Registration — El-Manara Academy' %}{% endblock %}
+{% block title %}Student Registration — El-Manara Academy{% endblock %}
 
 {% block content %}
 <div class="auth-wrapper">
   <div class="auth-card">
-    <h1>{% trans 'Create Student Account' %}</h1>
-    <p class="subtitle">{% trans 'Start your learning journey today.' %}</p>
+    <h1>Create Student Account</h1>
+    <p class="subtitle">Start your learning journey today.</p>
 
     <div class="role-tabs" role="tablist">
-      <a class="role-tab active" href="{% url 'register_student' %}" id="tab-student">🎓 {% trans 'Student' %}</a>
-      <a class="role-tab" href="{% url 'register_teacher' %}" id="tab-teacher">📚 {% trans 'Teacher' %}</a>
-      <a class="role-tab" href="{% url 'register_parent' %}" id="tab-parent">👨‍👩‍👧 {% trans 'Parent' %}</a>
+      <a class="role-tab active" href="{% url 'register_student' %}" id="tab-student">🎓 Student</a>
+      <a class="role-tab" href="{% url 'register_teacher' %}" id="tab-teacher">📚 Teacher</a>
+      <a class="role-tab" href="{% url 'register_parent' %}" id="tab-parent">👨‍👩‍👧 Parent</a>
     </div>
 
     <form method="post" novalidate>
@@ -25,13 +24,13 @@
         </div>
       {% endfor %}
       <button type="submit" class="btn btn-primary" style="inline-size:100%;justify-content:center;margin-block-start:.5rem;" id="register-student-submit">
-        {% trans 'Create Account' %} →
+        Create Account →
       </button>
     </form>
 
     <p style="text-align:center;margin-block-start:1.25rem;font-size:.87rem;color:var(--text-muted);">
-      {% trans 'Already have an account?' %}
-      <a href="{% url 'login' %}" style="font-weight:700;">{% trans 'Log in' %}</a>
+      Already have an account?
+      <a href="{% url 'login' %}" style="font-weight:700;">Log in</a>
     </p>
   </div>
 </div>

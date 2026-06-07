@@ -1,0 +1,140 @@
+{% extends "ar/base.html" %}
+
+{% block title %}من نحن — أكاديمية المنارة{% endblock %}
+
+{% block content %}
+
+<!-- ══ HERO ═══════════════════════════════════════════════════ -->
+<section class="hero" style="padding-block:5rem 3rem;" aria-labelledby="about-hero-heading">
+  <div class="container">
+    <div class="hero-badge">قصتنا 🎓</div>
+    <h1 id="about-hero-heading">
+      <span class="accent">أكاديمية المنارة</span><br>
+      منارة المعرفة والتميز
+    </h1>
+    <p>
+      أكاديمية المنارة هي منصة تعليمية رائدة تربط الطلاب بأفضل المعلمين في المنطقة العربية والعالم،
+      مع التركيز على الجودة والثقة والابتكار في كل خطوة من مسيرتك التعليمية.
+    </p>
+  </div>
+</section>
+
+<!-- ══ STATS ══════════════════════════════════════════════════ -->
+<section class="section-sm" style="background:var(--surface);">
+  <div class="container">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1.5rem;text-align:center;">
+      <div class="stat-card" style="flex-direction:column;text-align:center;padding:2rem;">
+        <div style="font-size:2.5rem;font-weight:800;color:var(--accent);">5,000+</div>
+        <div style="color:var(--text-muted);font-size:.9rem;margin-block-start:.4rem;">طالب مسجّل</div>
+      </div>
+      <div class="stat-card" style="flex-direction:column;text-align:center;padding:2rem;">
+        <div style="font-size:2.5rem;font-weight:800;color:var(--accent);">200+</div>
+        <div style="color:var(--text-muted);font-size:.9rem;margin-block-start:.4rem;">معلم معتمد</div>
+      </div>
+      <div class="stat-card" style="flex-direction:column;text-align:center;padding:2rem;">
+        <div style="font-size:2.5rem;font-weight:800;color:var(--accent);">15+</div>
+        <div style="color:var(--text-muted);font-size:.9rem;margin-block-start:.4rem;">مادة دراسية</div>
+      </div>
+      <div class="stat-card" style="flex-direction:column;text-align:center;padding:2rem;">
+        <div style="font-size:2.5rem;font-weight:800;color:var(--accent);">98%</div>
+        <div style="color:var(--text-muted);font-size:.9rem;margin-block-start:.4rem;">رضا الطلاب</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ MISSION / VISION / VALUES ══════════════════════════════ -->
+<section class="section" aria-labelledby="mvv-heading">
+  <div class="container">
+    <div class="section-heading">
+      <h2 id="mvv-heading">مهمتنا ورؤيتنا وقيمنا</h2>
+      <span class="accent-line"></span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2rem;margin-block-start:2rem;">
+
+      <div class="about-card">
+        <div class="about-card-icon">🎯</div>
+        <h3>مهمتنا</h3>
+        <p>
+          توفير تعليم عالي الجودة وميسور التكلفة لكل طالب في العالم العربي،
+          من خلال ربطه بمعلمين متميزين وخبراء في مجالاتهم.
+        </p>
+      </div>
+
+      <div class="about-card">
+        <div class="about-card-icon">🌟</div>
+        <h3>رؤيتنا</h3>
+        <p>
+          أن نكون المنصة التعليمية الأولى في الوطن العربي،
+          حيث يجد كل طالب المعلم المثالي الذي يُشعل شغفه بالمعرفة.
+        </p>
+      </div>
+
+      <div class="about-card">
+        <div class="about-card-icon">💎</div>
+        <h3>قيمنا</h3>
+        <ul style="color:var(--text-muted);font-size:.93rem;line-height:2;padding-inline-start:0;list-style:none;">
+          <li>✅ التميز والجودة</li>
+          <li>✅ الثقة والشفافية</li>
+          <li>✅ الابتكار والتطوير</li>
+          <li>✅ إمكانية الوصول للجميع</li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══ WHY CHOOSE US ══════════════════════════════════════════ -->
+<section class="section" style="background:var(--surface);" aria-labelledby="why-heading">
+  <div class="container">
+    <div class="section-heading">
+      <h2 id="why-heading">لماذا تختار المنارة؟</h2>
+      <span class="accent-line"></span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.5rem;margin-block-start:2rem;">
+      <div class="why-card">
+        <span class="why-icon">🔐</span>
+        <h4>معلمون موثّقون</h4>
+        <p>كل معلم يمر بعملية تحقق دقيقة قبل الانضمام إلى المنصة.</p>
+      </div>
+      <div class="why-card">
+        <span class="why-icon">📅</span>
+        <h4>مرونة تامة</h4>
+        <p>احجز جلساتك متى وأينما تريد، وفق جدولك الشخصي.</p>
+      </div>
+      <div class="why-card">
+        <span class="why-icon">💰</span>
+        <h4>أسعار تنافسية</h4>
+        <p>باقات ساعات بأسعار مخفّضة كلما اشتريت أكثر وفّرت أكثر.</p>
+      </div>
+      <div class="why-card">
+        <span class="why-icon">🌍</span>
+        <h4>ثنائي اللغة</h4>
+        <p>واجهة كاملة بالعربية والإنجليزية لتجربة تعليمية سلسة.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ CTA ════════════════════════════════════════════════════ -->
+<section class="section" style="text-align:center;">
+  <div class="container">
+    <h2 style="font-size:2rem;font-weight:800;margin-block-end:1rem;">
+      انضم إلى مجتمع المنارة اليوم
+    </h2>
+    <p style="color:var(--text-muted);max-inline-size:500px;margin-inline:auto;margin-block-end:2rem;">
+      سجّل كطالب أو معلم وابدأ رحلتك التعليمية الاستثنائية معنا.
+    </p>
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+      <a href="{% url 'register_student' %}" class="btn btn-primary" id="about-cta-student">
+        ابدأ كطالب ←
+      </a>
+      <a href="{% url 'register_teacher' %}" class="btn btn-outline" id="about-cta-teacher">
+        انضم كمعلم
+      </a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

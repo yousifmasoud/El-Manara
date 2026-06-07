@@ -1,123 +1,226 @@
-{% extends "base.html" %}
-{% load i18n %}
-
-{% block title %}{% trans 'Hour Packages — El-Manara Academy' %}{% endblock %}
-{% block meta_desc %}{% trans 'Purchase blocks of tutoring hours from 8 to 64 hours at discounted rates.' %}{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% load i18n %} {% block title %}Hour Packages —
+El-Manara Academy{% endblock %} {% block meta_desc %}Purchase blocks of tutoring
+hours from 8 to 64 hours at discounted rates.{% endblock %} {% block content %}
 <section class="section packages-section" aria-labelledby="pkg-page-heading">
-  <div class="container">
-
-    <div class="section-heading">
-      <h1 id="pkg-page-heading">{% trans 'Choose Your Learning Package' %}</h1>
-      <p>{% trans 'Lock in a block of tutoring hours. The more hours you buy, the lower your cost per session.' %}</p>
-      <span class="accent-line"></span>
-    </div>
-
-    <!-- ── Interactive Slider ── -->
-    <div class="package-selector">
-      <div class="package-slider-wrap">
-        <div class="hours-display" id="hours-display" aria-live="polite">8</div>
-        <div class="hours-label">{% trans 'tutoring hours' %}</div>
-
-        <input
-          type="range"
-          id="hours-slider"
-          min="8" max="64" step="8" value="8"
-          aria-label="{% trans 'Select number of hours' %}"
-        />
-
-        <div style="display:flex;justify-content:space-between;font-size:.75rem;color:var(--text-muted);margin-block-start:.35rem;">
-          <span>8h</span><span>16h</span><span>24h</span><span>32h</span><span>40h</span><span>48h</span><span>56h</span><span>64h</span>
+    <div class="container">
+        <div class="section-heading">
+            <h1 id="pkg-page-heading">Choose Your Learning Package</h1>
+            <p>
+                Lock in a block of tutoring hours. The more hours you buy, the
+                lower your cost per session.
+            </p>
+            <span class="accent-line"></span>
         </div>
 
-        <div class="price-display">
-          <div>
-            <div class="price-main" id="price-display">—</div>
-            <div class="price-per-hr" id="pph-display"></div>
-            <div style="font-size:.78rem;color:var(--text-muted);margin-block-start:.2rem;">
-              {% if LANGUAGE_CODE == 'ar' %}الأسعار بالدرهم الإماراتي (د.إ){% else %}Prices in UAE Dirhams (AED){% endif %}
+        <!-- ── Interactive Slider ── -->
+        <div class="package-selector">
+            <div class="package-slider-wrap">
+                <div
+                    class="hours-display"
+                    id="hours-display"
+                    aria-live="polite"
+                >
+                    8
+                </div>
+                <div class="hours-label">tutoring hours</div>
+
+                <input
+                    type="range"
+                    id="hours-slider"
+                    min="8"
+                    max="64"
+                    step="8"
+                    value="8"
+                    aria-label="Select number of hours"
+                />
+
+                <div
+                    style="
+                        display: flex;
+                        justify-content: space-between;
+                        font-size: 0.75rem;
+                        color: var(--text-muted);
+                        margin-block-start: 0.35rem;
+                    "
+                >
+                    <span>8h</span><span>16h</span><span>24h</span
+                    ><span>32h</span><span>40h</span><span>48h</span
+                    ><span>56h</span><span>64h</span>
+                </div>
+
+                <div class="price-display">
+                    <div>
+                        <div class="price-main" id="price-display">—</div>
+                        <div class="price-per-hr" id="pph-display"></div>
+                        <div
+                            style="
+                                font-size: 0.78rem;
+                                color: var(--text-muted);
+                                margin-block-start: 0.2rem;
+                            "
+                        >
+                            Prices in UAE Dirhams (AED)
+                        </div>
+                    </div>
+                    <div>
+                        <span
+                            class="savings-badge"
+                            id="savings-badge"
+                            style="display: none"
+                        ></span>
+                    </div>
+                </div>
+
+                {% if user.is_authenticated %}
+                <form
+                    method="post"
+                    action="{% url 'purchase_package' %}"
+                    style="margin-block-start: 1.25rem"
+                >
+                    {% csrf_token %}
+                    <input
+                        type="hidden"
+                        name="package_id"
+                        id="pkg-id-input"
+                        value=""
+                    />
+                    <button
+                        type="submit"
+                        id="purchase-btn"
+                        class="btn btn-primary"
+                        style="inline-size: 100%; justify-content: center"
+                    >
+                        Purchase This Package →
+                    </button>
+                </form>
+                {% else %}
+                <a
+                    href="{% url 'register_student' %}"
+                    class="btn btn-primary"
+                    style="
+                        inline-size: 100%;
+                        justify-content: center;
+                        margin-block-start: 1.25rem;
+                        display: flex;
+                    "
+                >
+                    Sign Up to Purchase →
+                </a>
+                {% endif %}
             </div>
-          </div>
-          <div>
-            <span class="savings-badge" id="savings-badge" style="display:none;"></span>
-          </div>
         </div>
 
-        {% if user.is_authenticated %}
-        <form method="post" action="{% url 'purchase_package' %}" style="margin-block-start:1.25rem;">
-          {% csrf_token %}
-          <input type="hidden" name="package_id" id="pkg-id-input" value="" />
-          <button type="submit" id="purchase-btn" class="btn btn-primary" style="inline-size:100%;justify-content:center;">
-            {% trans 'Purchase This Package' %} →
-          </button>
-        </form>
-        {% else %}
-        <a href="{% url 'register_student' %}" class="btn btn-primary" style="inline-size:100%;justify-content:center;margin-block-start:1.25rem;display:flex;">
-          {% trans 'Sign Up to Purchase' %} →
-        </a>
-        {% endif %}
-      </div>
-    </div>
-
-    <!-- ── Package Cards Grid ── -->
-    <div class="packages-grid" role="list">
-      {% for pkg in packages %}
-      <article
-        class="pkg-card {% if pkg.is_featured %}featured{% endif %}"
-        data-hours="{{ pkg.hours }}"
-        data-price="{{ pkg.price_aed }}"
-        data-pph="{{ pkg.price_per_hour_aed }}"
-        data-savings="{{ pkg.savings_percent }}"
-        data-pkg-id="{{ pkg.pk }}"
-        data-featured="{% if pkg.is_featured %}1{% else %}0{% endif %}"
-        data-badge="{% trans 'Best Value' %}"
-        role="listitem"
-        id="pkg-card-{{ pkg.hours }}"
-        style="cursor:pointer;"
-      >
-        <div class="pkg-hours">{{ pkg.hours }}{% trans 'hr' %}</div>
-        <div>
-          <div class="pkg-price">{{ pkg.price_aed }} {% if LANGUAGE_CODE == 'ar' %}د.إ{% else %}AED{% endif %}</div>
-          <div class="pkg-pph">{{ pkg.price_per_hour_aed }} {% if LANGUAGE_CODE == 'ar' %}د.إ/ساعة{% else %}AED/hr{% endif %}</div>
+        <!-- ── Package Cards Grid ── -->
+        <div class="packages-grid" role="list">
+            {% for pkg in packages %}
+            <article
+                class="pkg-card {% if pkg.is_featured %}featured{% endif %}"
+                data-hours="{{ pkg.hours }}"
+                data-price="{{ pkg.price_aed }}"
+                data-pph="{{ pkg.price_per_hour_aed }}"
+                data-savings="{{ pkg.savings_percent }}"
+                data-pkg-id="{{ pkg.pk }}"
+                data-featured="{% if pkg.is_featured %}1{% else %}0{% endif %}"
+                data-badge="Best Value"
+                role="listitem"
+                id="pkg-card-{{ pkg.hours }}"
+                style="cursor: pointer"
+            >
+                <div class="pkg-hours">{{ pkg.hours }}hr</div>
+                <div>
+                    <div class="pkg-price">{{ pkg.price_aed }} AED</div>
+                    <div class="pkg-pph">
+                        {{ pkg.price_per_hour_aed }} AED/hr
+                    </div>
+                </div>
+                {% if pkg.savings_percent > 0 %}
+                <div class="pkg-savings">Save {{ pkg.savings_percent }}%</div>
+                {% endif %}
+                <p style="font-size: 0.82rem; color: var(--text-muted)">
+                    {{ pkg.description_en }}
+                </p>
+            </article>
+            {% empty %}
+            <p
+                style="
+                    grid-column: 1/-1;
+                    text-align: center;
+                    color: var(--text-muted);
+                "
+            >
+                Packages coming soon. Please check back later.
+            </p>
+            {% endfor %}
         </div>
-        {% if pkg.savings_percent > 0 %}
-          <div class="pkg-savings">{% trans 'Save' %} {{ pkg.savings_percent }}%</div>
-        {% endif %}
-        <p style="font-size:.82rem;color:var(--text-muted);">
-          {% if LANGUAGE_CODE == 'ar' and pkg.description_ar %}{{ pkg.description_ar }}
-          {% else %}{{ pkg.description_en }}{% endif %}
-        </p>
-      </article>
-      {% empty %}
-      <p style="grid-column:1/-1;text-align:center;color:var(--text-muted);">
-        {% trans 'Packages coming soon. Please check back later.' %}
-      </p>
-      {% endfor %}
-    </div>
 
-    <!-- ── Referral CTA ── -->
-    <div style="margin-block-start:4rem;text-align:center;padding:2.5rem;background:var(--surface);border-radius:var(--radius);border:1.5px solid var(--border);">
-      <h2 style="font-size:1.5rem;font-weight:800;margin-block-end:.6rem;">{% trans 'Refer a Friend, Earn Free Hours!' %}</h2>
-      <p style="color:var(--text-muted);max-inline-size:520px;margin-inline:auto;margin-block-end:1.5rem;">
-        {% trans 'Share your unique referral code. When your friend buys any package within 30 days, you both benefit — up to 4 referrals per month.' %}
-      </p>
-      {% if user.is_authenticated %}
-        {% with sp=user.profile.student_profile %}
-        {% if sp %}
-        <div style="display:inline-flex;align-items:center;gap:.75rem;background:var(--bg);border:1.5px solid var(--accent);border-radius:var(--radius-sm);padding:.6rem 1.25rem;">
-          <code style="font-size:1.1rem;font-weight:800;letter-spacing:.1em;color:var(--accent);">{{ sp.referral_code }}</code>
-          <button id="copy-referral" data-code="{{ sp.referral_code }}" class="btn btn-outline" style="padding:.3rem .9rem;font-size:.82rem;">
-            {% trans 'Copy' %}
-          </button>
+        <!-- ── Referral CTA ── -->
+        <div
+            style="
+                margin-block-start: 4rem;
+                text-align: center;
+                padding: 2.5rem;
+                background: var(--surface);
+                border-radius: var(--radius);
+                border: 1.5px solid var(--border);
+            "
+        >
+            <h2
+                style="
+                    font-size: 1.5rem;
+                    font-weight: 800;
+                    margin-block-end: 0.6rem;
+                "
+            >
+                Refer a Friend, Earn Free Hours!
+            </h2>
+            <p
+                style="
+                    color: var(--text-muted);
+                    max-inline-size: 520px;
+                    margin-inline: auto;
+                    margin-block-end: 1.5rem;
+                "
+            >
+                Share your unique referral code. When your friend buys any
+                package within 30 days, you both benefit — up to 4 referrals per
+                month.
+            </p>
+            {% if user.is_authenticated %} {% if user.profile.student_profile %}
+            <div
+                style="
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 0.75rem;
+                    background: var(--bg);
+                    border: 1.5px solid var(--accent);
+                    border-radius: var(--radius-sm);
+                    padding: 0.6rem 1.25rem;
+                "
+            >
+                <code
+                    style="
+                        font-size: 1.1rem;
+                        font-weight: 800;
+                        letter-spacing: 0.1em;
+                        color: var(--accent);
+                    "
+                    >{{ user.profile.student_profile.referral_code }}</code
+                >
+                <button
+                    id="copy-referral"
+                    data-code="{{ user.profile.student_profile.referral_code }}"
+                    class="btn btn-outline"
+                    style="padding: 0.3rem 0.9rem; font-size: 0.82rem"
+                >
+                    Copy
+                </button>
+            </div>
+            {% endif %} {% else %}
+            <a href="{% url 'register_student' %}" class="btn btn-primary"
+                >Create Account to Get Your Code</a
+            >
+            {% endif %}
         </div>
-        {% endif %}
-        {% endwith %}
-      {% else %}
-      <a href="{% url 'register_student' %}" class="btn btn-primary">{% trans 'Create Account to Get Your Code' %}</a>
-      {% endif %}
     </div>
-
-  </div>
 </section>
 {% endblock %}

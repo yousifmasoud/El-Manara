@@ -1,154 +1,291 @@
-{% extends "base.html" %}
-{% load i18n %}
-
-{% block title %}{% if LANGUAGE_CODE == 'ar' %}من نحن — أكاديمية المنارة{% else %}About Us — El-Manara Academy{% endif %}{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% load i18n %} {% block title %}About Us — El-Manara
+Academy{% endblock %} {% block content %}
 
 <!-- Hero -->
-<section class="hero" style="padding-block:5rem 3rem;" aria-labelledby="about-hero-heading">
-  <div class="container">
-    <div class="hero-badge">🎓 {% if LANGUAGE_CODE == 'ar' %}قصتنا{% else %}Our Story{% endif %}</div>
-    <h1 id="about-hero-heading">
-      {% if LANGUAGE_CODE == 'ar' %}
-        <span class="accent">أكاديمية المنارة</span><br>منارة المعرفة والتميز
-      {% else %}
-        <span class="accent">El-Manara Academy</span><br>A Beacon of Knowledge
-      {% endif %}
-    </h1>
-    <p>
-      {% if LANGUAGE_CODE == 'ar' %}
-        أكاديمية المنارة هي منصة تعليمية رائدة تربط الطلاب بأفضل المعلمين في المنطقة العربية والعالم، مع التركيز على الجودة والثقة والابتكار.
-      {% else %}
-        El-Manara Academy is a leading educational platform connecting students with top tutors across the Arab world and beyond, with a focus on quality, trust, and innovation.
-      {% endif %}
-    </p>
-  </div>
+<section
+    class="hero"
+    style="padding-block: 5rem 3rem"
+    aria-labelledby="about-hero-heading"
+>
+    <div class="container">
+        <div class="hero-badge">🎓 Our Story</div>
+        <h1 id="about-hero-heading">
+            <span class="accent">El-Manara Academy</span><br />A Beacon of
+            Knowledge
+        </h1>
+        <p>
+            El-Manara Academy is a leading educational platform connecting
+            students with top tutors across the Arab world and beyond, with a
+            focus on quality, trust, and innovation.
+        </p>
+    </div>
 </section>
 
 <!-- Stats -->
-<section class="section-sm" style="background:var(--surface);">
-  <div class="container">
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1.5rem;text-align:center;">
-      <div class="stat-card" style="flex-direction:column;text-align:center;padding:2rem;">
-        <div style="font-size:2.5rem;font-weight:800;color:var(--accent);">5,000+</div>
-        <div style="color:var(--text-muted);font-size:.9rem;margin-block-start:.4rem;">{% if LANGUAGE_CODE == 'ar' %}طالب مسجّل{% else %}Enrolled Students{% endif %}</div>
-      </div>
-      <div class="stat-card" style="flex-direction:column;text-align:center;padding:2rem;">
-        <div style="font-size:2.5rem;font-weight:800;color:var(--accent);">200+</div>
-        <div style="color:var(--text-muted);font-size:.9rem;margin-block-start:.4rem;">{% if LANGUAGE_CODE == 'ar' %}معلم معتمد{% else %}Verified Teachers{% endif %}</div>
-      </div>
-      <div class="stat-card" style="flex-direction:column;text-align:center;padding:2rem;">
-        <div style="font-size:2.5rem;font-weight:800;color:var(--accent);">15+</div>
-        <div style="color:var(--text-muted);font-size:.9rem;margin-block-start:.4rem;">{% if LANGUAGE_CODE == 'ar' %}مادة دراسية{% else %}Subjects Offered{% endif %}</div>
-      </div>
-      <div class="stat-card" style="flex-direction:column;text-align:center;padding:2rem;">
-        <div style="font-size:2.5rem;font-weight:800;color:var(--accent);">98%</div>
-        <div style="color:var(--text-muted);font-size:.9rem;margin-block-start:.4rem;">{% if LANGUAGE_CODE == 'ar' %}رضا الطلاب{% else %}Student Satisfaction{% endif %}</div>
-      </div>
+<section class="section-sm" style="background: var(--surface)">
+    <div class="container">
+        <div
+            style="
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+                gap: 1.5rem;
+                text-align: center;
+            "
+        >
+            <div
+                class="stat-card"
+                style="
+                    flex-direction: column;
+                    text-align: center;
+                    padding: 2rem;
+                "
+            >
+                <div
+                    style="
+                        font-size: 2.5rem;
+                        font-weight: 800;
+                        color: var(--accent);
+                    "
+                >
+                    5,000+
+                </div>
+                <div
+                    style="
+                        color: var(--text-muted);
+                        font-size: 0.9rem;
+                        margin-block-start: 0.4rem;
+                    "
+                >
+                    Enrolled Students
+                </div>
+            </div>
+            <div
+                class="stat-card"
+                style="
+                    flex-direction: column;
+                    text-align: center;
+                    padding: 2rem;
+                "
+            >
+                <div
+                    style="
+                        font-size: 2.5rem;
+                        font-weight: 800;
+                        color: var(--accent);
+                    "
+                >
+                    200+
+                </div>
+                <div
+                    style="
+                        color: var(--text-muted);
+                        font-size: 0.9rem;
+                        margin-block-start: 0.4rem;
+                    "
+                >
+                    Verified Teachers
+                </div>
+            </div>
+            <div
+                class="stat-card"
+                style="
+                    flex-direction: column;
+                    text-align: center;
+                    padding: 2rem;
+                "
+            >
+                <div
+                    style="
+                        font-size: 2.5rem;
+                        font-weight: 800;
+                        color: var(--accent);
+                    "
+                >
+                    15+
+                </div>
+                <div
+                    style="
+                        color: var(--text-muted);
+                        font-size: 0.9rem;
+                        margin-block-start: 0.4rem;
+                    "
+                >
+                    Subjects Offered
+                </div>
+            </div>
+            <div
+                class="stat-card"
+                style="
+                    flex-direction: column;
+                    text-align: center;
+                    padding: 2rem;
+                "
+            >
+                <div
+                    style="
+                        font-size: 2.5rem;
+                        font-weight: 800;
+                        color: var(--accent);
+                    "
+                >
+                    98%
+                </div>
+                <div
+                    style="
+                        color: var(--text-muted);
+                        font-size: 0.9rem;
+                        margin-block-start: 0.4rem;
+                    "
+                >
+                    Student Satisfaction
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 </section>
 
 <!-- Mission / Vision / Values -->
 <section class="section" aria-labelledby="mvv-heading">
-  <div class="container">
-    <div class="section-heading">
-      <h2 id="mvv-heading">{% if LANGUAGE_CODE == 'ar' %}مهمتنا ورؤيتنا وقيمنا{% else %}Mission, Vision & Values{% endif %}</h2>
-      <span class="accent-line"></span>
+    <div class="container">
+        <div class="section-heading">
+            <h2 id="mvv-heading">Mission, Vision &amp; Values</h2>
+            <span class="accent-line"></span>
+        </div>
+        <div
+            style="
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 2rem;
+                margin-block-start: 2rem;
+            "
+        >
+            <div class="about-card">
+                <div class="about-card-icon">🎯</div>
+                <h3>Our Mission</h3>
+                <p>
+                    Provide high-quality, affordable education to every student
+                    in the Arab world by connecting them with outstanding,
+                    expert tutors in every subject.
+                </p>
+            </div>
+
+            <div class="about-card">
+                <div class="about-card-icon">🌟</div>
+                <h3>Our Vision</h3>
+                <p>
+                    To become the leading educational platform in the Arab
+                    world, where every student finds the perfect tutor who
+                    ignites their passion for learning.
+                </p>
+            </div>
+
+            <div class="about-card">
+                <div class="about-card-icon">💎</div>
+                <h3>Our Values</h3>
+                <ul
+                    style="
+                        color: var(--text-muted);
+                        font-size: 0.93rem;
+                        line-height: 2;
+                        padding-inline-start: 0;
+                        list-style: none;
+                    "
+                >
+                    <li>✅ Excellence &amp; Quality</li>
+                    <li>✅ Trust &amp; Transparency</li>
+                    <li>✅ Innovation &amp; Growth</li>
+                    <li>✅ Accessibility</li>
+                </ul>
+            </div>
+        </div>
     </div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2rem;margin-block-start:2rem;">
-
-      <div class="about-card">
-        <div class="about-card-icon">🎯</div>
-        <h3>{% if LANGUAGE_CODE == 'ar' %}مهمتنا{% else %}Our Mission{% endif %}</h3>
-        <p>
-          {% if LANGUAGE_CODE == 'ar' %}
-            توفير تعليم عالي الجودة وميسور التكلفة لكل طالب في العالم العربي، من خلال ربطه بمعلمين متميزين وخبراء في مجالاتهم.
-          {% else %}
-            Provide high-quality, affordable education to every student in the Arab world by connecting them with outstanding, expert tutors in every subject.
-          {% endif %}
-        </p>
-      </div>
-
-      <div class="about-card">
-        <div class="about-card-icon">🌟</div>
-        <h3>{% if LANGUAGE_CODE == 'ar' %}رؤيتنا{% else %}Our Vision{% endif %}</h3>
-        <p>
-          {% if LANGUAGE_CODE == 'ar' %}
-            أن نكون المنصة التعليمية الأولى في الوطن العربي، حيث يجد كل طالب المعلم المثالي الذي يُشعل شغفه بالمعرفة.
-          {% else %}
-            To become the leading educational platform in the Arab world, where every student finds the perfect tutor who ignites their passion for learning.
-          {% endif %}
-        </p>
-      </div>
-
-      <div class="about-card">
-        <div class="about-card-icon">💎</div>
-        <h3>{% if LANGUAGE_CODE == 'ar' %}قيمنا{% else %}Our Values{% endif %}</h3>
-        <ul style="color:var(--text-muted);font-size:.93rem;line-height:2;padding-inline-start:0;list-style:none;">
-          <li>✅ {% if LANGUAGE_CODE == 'ar' %}التميز والجودة{% else %}Excellence & Quality{% endif %}</li>
-          <li>✅ {% if LANGUAGE_CODE == 'ar' %}الثقة والشفافية{% else %}Trust & Transparency{% endif %}</li>
-          <li>✅ {% if LANGUAGE_CODE == 'ar' %}الابتكار والتطوير{% else %}Innovation & Growth{% endif %}</li>
-          <li>✅ {% if LANGUAGE_CODE == 'ar' %}إمكانية الوصول{% else %}Accessibility{% endif %}</li>
-        </ul>
-      </div>
-
-    </div>
-  </div>
 </section>
 
 <!-- Why Choose Us -->
-<section class="section" style="background:var(--surface);" aria-labelledby="why-heading">
-  <div class="container">
-    <div class="section-heading">
-      <h2 id="why-heading">{% if LANGUAGE_CODE == 'ar' %}لماذا تختار المنارة؟{% else %}Why Choose El-Manara?{% endif %}</h2>
-      <span class="accent-line"></span>
+<section
+    class="section"
+    style="background: var(--surface)"
+    aria-labelledby="why-heading"
+>
+    <div class="container">
+        <div class="section-heading">
+            <h2 id="why-heading">Why Choose El-Manara?</h2>
+            <span class="accent-line"></span>
+        </div>
+        <div
+            style="
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+                gap: 1.5rem;
+                margin-block-start: 2rem;
+            "
+        >
+            <div class="why-card">
+                <span class="why-icon">🔐</span>
+                <h4>Verified Tutors</h4>
+                <p>
+                    Every tutor passes a thorough vetting process before
+                    joining.
+                </p>
+            </div>
+            <div class="why-card">
+                <span class="why-icon">📅</span>
+                <h4>Full Flexibility</h4>
+                <p>Book sessions whenever and wherever you want.</p>
+            </div>
+            <div class="why-card">
+                <span class="why-icon">💰</span>
+                <h4>Competitive Pricing</h4>
+                <p>Hour packages with bigger discounts the more you buy.</p>
+            </div>
+            <div class="why-card">
+                <span class="why-icon">🌍</span>
+                <h4>Bilingual Platform</h4>
+                <p>Full Arabic and English interface.</p>
+            </div>
+        </div>
     </div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.5rem;margin-block-start:2rem;">
-      {% for item in why_items %}{% endfor %}
-      <div class="why-card">
-        <span class="why-icon">🔐</span>
-        <h4>{% if LANGUAGE_CODE == 'ar' %}معلمون موثّقون{% else %}Verified Tutors{% endif %}</h4>
-        <p>{% if LANGUAGE_CODE == 'ar' %}كل معلم يمر بعملية تحقق دقيقة قبل الانضمام.{% else %}Every tutor passes a thorough vetting process before joining.{% endif %}</p>
-      </div>
-      <div class="why-card">
-        <span class="why-icon">📅</span>
-        <h4>{% if LANGUAGE_CODE == 'ar' %}مرونة تامة{% else %}Full Flexibility{% endif %}</h4>
-        <p>{% if LANGUAGE_CODE == 'ar' %}احجز جلساتك متى وأينما تريد.{% else %}Book sessions whenever and wherever you want.{% endif %}</p>
-      </div>
-      <div class="why-card">
-        <span class="why-icon">💰</span>
-        <h4>{% if LANGUAGE_CODE == 'ar' %}أسعار تنافسية{% else %}Competitive Pricing{% endif %}</h4>
-        <p>{% if LANGUAGE_CODE == 'ar' %}باقات ساعات بأسعار مخفّضة كلما اشتريت أكثر.{% else %}Hour packages with bigger discounts the more you buy.{% endif %}</p>
-      </div>
-      <div class="why-card">
-        <span class="why-icon">🌍</span>
-        <h4>{% if LANGUAGE_CODE == 'ar' %}ثنائي اللغة{% else %}Bilingual Platform{% endif %}</h4>
-        <p>{% if LANGUAGE_CODE == 'ar' %}واجهة كاملة بالعربية والإنجليزية.{% else %}Full Arabic and English interface.{% endif %}</p>
-      </div>
-    </div>
-  </div>
 </section>
 
 <!-- CTA -->
-<section class="section" style="text-align:center;">
-  <div class="container">
-    <h2 style="font-size:2rem;font-weight:800;margin-block-end:1rem;">
-      {% if LANGUAGE_CODE == 'ar' %}انضم إلى مجتمع المنارة اليوم{% else %}Join the El-Manara Community Today{% endif %}
-    </h2>
-    <p style="color:var(--text-muted);max-inline-size:500px;margin-inline:auto;margin-block-end:2rem;">
-      {% if LANGUAGE_CODE == 'ar' %}سجّل كطالب أو معلم وابدأ رحلتك التعليمية الاستثنائية.{% else %}Register as a student or teacher and begin your extraordinary learning journey.{% endif %}
-    </p>
-    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
-      <a href="{% url 'register_student' %}" class="btn btn-primary" id="about-cta-student">
-        {% if LANGUAGE_CODE == 'ar' %}ابدأ كطالب{% else %}Start as Student{% endif %} →
-      </a>
-      <a href="{% url 'register_teacher' %}" class="btn btn-outline" id="about-cta-teacher">
-        {% if LANGUAGE_CODE == 'ar' %}انضم كمعلم{% else %}Join as Teacher{% endif %}
-      </a>
+<section class="section" style="text-align: center">
+    <div class="container">
+        <h2 style="font-size: 2rem; font-weight: 800; margin-block-end: 1rem">
+            Join the El-Manara Community Today
+        </h2>
+        <p
+            style="
+                color: var(--text-muted);
+                max-inline-size: 500px;
+                margin-inline: auto;
+                margin-block-end: 2rem;
+            "
+        >
+            Register as a student or teacher and begin your extraordinary
+            learning journey.
+        </p>
+        <div
+            style="
+                display: flex;
+                gap: 1rem;
+                justify-content: center;
+                flex-wrap: wrap;
+            "
+        >
+            <a
+                href="{% url 'register_student' %}"
+                class="btn btn-primary"
+                id="about-cta-student"
+                >Start as Student →</a
+            >
+            <a
+                href="{% url 'register_teacher' %}"
+                class="btn btn-outline"
+                id="about-cta-teacher"
+                >Join as Teacher</a
+            >
+        </div>
     </div>
-  </div>
 </section>
 
 {% endblock %}

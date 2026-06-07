@@ -1,0 +1,40 @@
+{% extends "ar/base.html" %}
+
+{% block title %}تسجيل الدخول — أكاديمية المنارة{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+  <div class="auth-card">
+    <h1>مرحباً بعودتك</h1>
+    <p class="subtitle">سجّل دخولك لمواصلة رحلتك التعليمية.</p>
+
+    <div class="role-tabs" role="tablist">
+      <a class="role-tab active" href="{% url 'login' %}" id="tab-login">تسجيل الدخول</a>
+      <a class="role-tab" href="{% url 'register_student' %}" id="tab-student">طالب</a>
+      <a class="role-tab" href="{% url 'register_parent' %}" id="tab-parent">ولي أمر</a>
+    </div>
+
+    <form method="post" action="{% url 'login' %}" novalidate>
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="form-group">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}<ul class="errorlist">{% for e in field.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+        </div>
+      {% endfor %}
+      {% if form.non_field_errors %}
+        <ul class="errorlist">{% for e in form.non_field_errors %}<li>{{ e }}</li>{% endfor %}</ul>
+      {% endif %}
+      <button type="submit" class="btn btn-primary" style="inline-size:100%;justify-content:center;margin-block-start:.5rem;" id="login-submit">
+        تسجيل الدخول
+      </button>
+    </form>
+
+    <p style="text-align:center;margin-block-start:1.25rem;font-size:.87rem;color:var(--text-muted);">
+      ليس لديك حساب؟
+      <a href="{% url 'register_student' %}" style="font-weight:700;">سجّل الآن</a>
+    </p>
+  </div>
+</div>
+{% endblock %}

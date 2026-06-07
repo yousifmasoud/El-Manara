@@ -1,0 +1,145 @@
+{% extends "ar/base.html" %}
+{% load static %}
+
+{% block title %}أكاديمية المنارة — تعلّم بلا حدود{% endblock %}
+
+{% block content %}
+
+<!-- ══ HERO ═══════════════════════════════════════════════════ -->
+<section class="hero" aria-labelledby="hero-heading">
+  <div class="container">
+    <div class="hero-badge">
+      <span>✨</span> موثوق به من قِبَل أكثر من 5,000 طالب
+    </div>
+    <h1 id="hero-heading">
+      تعلّم من<br>
+      <span class="accent">أفضل المعلمين</span><br>
+      وفق جدولك الخاص
+    </h1>
+    <p>أكاديمية المنارة تربطك بمعلمين خبراء وموثّقين لكل المواد — من المناهج اليومية إلى الاختبارات الدولية الكبرى.</p>
+    <div class="hero-btns">
+      <a href="{% url 'register_student' %}" class="btn btn-primary" id="hero-cta-primary">
+        ابدأ التعلّم اليوم ←
+      </a>
+      <a href="{% url 'packages' %}" class="btn btn-outline" id="hero-cta-packages">
+        استعرض الباقات
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ══ SUBJECTS GRID ══════════════════════════════════════════ -->
+<section class="section" aria-labelledby="subjects-heading">
+  <div class="container">
+    <div class="section-heading">
+      <h2 id="subjects-heading">استعرض المواد</h2>
+      <p>اعثر على معلمين خبراء في كل التخصصات.</p>
+      <span class="accent-line"></span>
+    </div>
+
+    {% if subjects %}
+    <div class="subjects-grid" role="list">
+      {% for subject in subjects %}
+      <a href="{% url 'register_student' %}?subject={{ subject.slug }}"
+         class="subject-card" role="listitem" id="subject-{{ subject.slug }}">
+        <div class="subject-icon" aria-hidden="true">
+          {% if subject.icon_svg %}
+            {{ subject.icon_svg|safe }}
+          {% else %}
+            <svg viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="52" height="52" rx="12" fill="var(--accent-light)"/>
+              <path d="M14 26h24M26 14v24" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+          {% endif %}
+        </div>
+        <span class="subject-name">
+          {% if subject.name_ar %}{{ subject.name_ar }}{% else %}{{ subject.name_en }}{% endif %}
+        </span>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p style="text-align:center;color:var(--text-muted);">المواد قريباً.</p>
+    {% endif %}
+  </div>
+</section>
+
+<!-- ══ TEST PREP ══════════════════════════════════════════════ -->
+{% if test_prep %}
+<section class="section" style="background:var(--surface);" aria-labelledby="testprep-heading">
+  <div class="container">
+    <div class="section-heading">
+      <h2 id="testprep-heading">التحضير للاختبارات الدولية</h2>
+      <p>تدريب متميز للاختبارات التي تفتح أبواب العالم.</p>
+      <span class="accent-line"></span>
+    </div>
+    <div class="test-prep-grid">
+      {% for tp in test_prep %}
+      <article class="test-prep-card" id="testprep-{{ tp.slug }}" aria-labelledby="tp-title-{{ tp.slug }}">
+        <span class="test-prep-badge">{{ tp.test_prep_badge|upper }}</span>
+        <div class="test-prep-icon" aria-hidden="true">
+          {% if tp.icon_svg %}{{ tp.icon_svg|safe }}
+          {% elif tp.slug == 'sat' %}🎓
+          {% elif tp.slug == 'ielts' %}🌍
+          {% else %}📝{% endif %}
+        </div>
+        <h3 id="tp-title-{{ tp.slug }}">
+          {% if tp.name_ar %}{{ tp.name_ar }}{% else %}{{ tp.name_en }}{% endif %}
+        </h3>
+        <p>
+          {% if tp.description_ar %}{{ tp.description_ar }}{% else %}{{ tp.description_en }}{% endif %}
+        </p>
+        <a href="{% url 'register_student' %}?subject={{ tp.slug }}" class="test-prep-cta">
+          ابحث عن معلم ←
+        </a>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- ══ FEATURED PACKAGES TEASER ═══════════════════════════════ -->
+{% if featured_packages %}
+<section class="section" aria-labelledby="featured-pkg-heading">
+  <div class="container" style="text-align:center;">
+    <div class="section-heading">
+      <h2 id="featured-pkg-heading">باقات ساعات مرنة</h2>
+      <p>اشترِ حزمًا من ساعات الدراسة بأسعار مخفّضة. كلما تعلّمت أكثر، وفّرت أكثر.</p>
+      <span class="accent-line"></span>
+    </div>
+    <a href="{% url 'packages' %}" class="btn btn-primary" id="view-all-packages">
+      استعرض جميع الباقات والأسعار ←
+    </a>
+  </div>
+</section>
+{% endif %}
+
+<!-- ══ HOW IT WORKS ════════════════════════════════════════════ -->
+<section class="section" style="background:var(--surface);" aria-labelledby="how-heading">
+  <div class="container">
+    <div class="section-heading">
+      <h2 id="how-heading">كيف تعمل المنارة؟</h2>
+      <span class="accent-line"></span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:2rem;margin-block-start:2rem;">
+      <div style="text-align:center;padding:1.5rem;">
+        <div style="font-size:2.5rem;margin-block-end:.75rem;">📋</div>
+        <h3 style="font-weight:700;margin-block-end:.5rem;">اختر مادة</h3>
+        <p style="color:var(--text-muted);font-size:.9rem;">تصفّح المواد أو اختر مسار التحضير للاختبار الذي يناسبك.</p>
+      </div>
+      <div style="text-align:center;padding:1.5rem;">
+        <div style="font-size:2.5rem;margin-block-end:.75rem;">🎓</div>
+        <h3 style="font-weight:700;margin-block-end:.5rem;">تطابق مع معلم</h3>
+        <p style="color:var(--text-muted);font-size:.9rem;">نطابقك مع معلم خبير موثّق يتناسب مع جدولك ومستواك.</p>
+      </div>
+      <div style="text-align:center;padding:1.5rem;">
+        <div style="font-size:2.5rem;margin-block-end:.75rem;">🚀</div>
+        <h3 style="font-weight:700;margin-block-end:.5rem;">ابدأ التعلّم</h3>
+        <p style="color:var(--text-muted);font-size:.9rem;">احجز جلساتك من رصيد ساعاتك متى كنت مستعدًا.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

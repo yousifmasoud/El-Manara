@@ -1,125 +1,287 @@
-{% extends "base.html" %}
-{% load i18n %}
+{% extends "base.html" %} {% load i18n %} {% block title %}Contact Us —
+El-Manara Academy{% endblock %} {% block content %}
 
-{% block title %}{% if LANGUAGE_CODE == 'ar' %}اتصل بنا — أكاديمية المنارة{% else %}Contact Us — El-Manara Academy{% endif %}{% endblock %}
-
-{% block content %}
-
-<section class="hero" style="padding-block:5rem 3rem;" aria-labelledby="contact-heading">
-  <div class="container">
-    <div class="hero-badge">📬 {% if LANGUAGE_CODE == 'ar' %}نحن هنا لمساعدتك{% else %}We're Here to Help{% endif %}</div>
-    <h1 id="contact-heading">
-      {% if LANGUAGE_CODE == 'ar' %}<span class="accent">تواصل معنا</span>{% else %}<span class="accent">Contact Us</span>{% endif %}
-    </h1>
-    <p>
-      {% if LANGUAGE_CODE == 'ar' %}فريقنا مستعد للإجابة على جميع أسئلتك وتوجيهك.{% else %}Our team is ready to answer all your questions and guide you.{% endif %}
-    </p>
-  </div>
+<section
+    class="hero"
+    style="padding-block: 5rem 3rem"
+    aria-labelledby="contact-heading"
+>
+    <div class="container">
+        <div class="hero-badge">📬 We're Here to Help</div>
+        <h1 id="contact-heading"><span class="accent">Contact Us</span></h1>
+        <p>Our team is ready to answer all your questions and guide you.</p>
+    </div>
 </section>
 
 <section class="section">
-  <div class="container">
-    <div class="contact-grid">
+    <div class="container">
+        <div class="contact-grid">
+            <!-- Contact Info -->
+            <div class="contact-info-col">
+                <h2
+                    style="
+                        font-size: 1.5rem;
+                        font-weight: 800;
+                        margin-block-end: 1.5rem;
+                    "
+                >
+                    Contact Information
+                </h2>
 
-      <!-- Contact Info -->
-      <div class="contact-info-col">
+                <ul class="contact-info-list">
+                    <li>
+                        <div class="contact-info-icon">📧</div>
+                        <div>
+                            <strong>Email</strong>
+                            <a href="mailto:info@elmanaraacademy.com"
+                                >info@elmanaraacademy.com</a
+                            >
+                        </div>
+                    </li>
+                    <li>
+                        <div class="contact-info-icon">💬</div>
+                        <div>
+                            <strong>WhatsApp</strong>
+                            <a
+                                href="https://wa.me/971500000000"
+                                target="_blank"
+                                rel="noopener"
+                                >+971 50 000 0000</a
+                            >
+                        </div>
+                    </li>
+                    <li>
+                        <div class="contact-info-icon">📍</div>
+                        <div>
+                            <strong>Location</strong>
+                            <span>United Arab Emirates</span>
+                        </div>
+                    </li>
+                </ul>
 
-        <h2 style="font-size:1.5rem;font-weight:800;margin-block-end:1.5rem;">
-          {% if LANGUAGE_CODE == 'ar' %}معلومات التواصل{% else %}Contact Information{% endif %}
-        </h2>
-
-        <ul class="contact-info-list">
-          <li>
-            <div class="contact-info-icon">📧</div>
-            <div>
-              <strong>{% if LANGUAGE_CODE == 'ar' %}البريد الإلكتروني{% else %}Email{% endif %}</strong>
-              <a href="mailto:info@elmanaraacademy.com">info@elmanaraacademy.com</a>
+                <h3
+                    style="
+                        font-size: 1.1rem;
+                        font-weight: 700;
+                        margin-block: 2rem 1rem;
+                    "
+                >
+                    Find Us On Social Media
+                </h3>
+                <div class="contact-social-grid">
+                    <a
+                        href="https://facebook.com/elmanaraacademy"
+                        class="contact-social-btn"
+                        target="_blank"
+                        rel="noopener"
+                        id="contact-facebook"
+                    >
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                            width="20"
+                            height="20"
+                        >
+                            <path
+                                d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"
+                            />
+                        </svg>
+                        Facebook
+                    </a>
+                    <a
+                        href="https://instagram.com/elmanaraacademy"
+                        class="contact-social-btn"
+                        target="_blank"
+                        rel="noopener"
+                        id="contact-instagram"
+                    >
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            width="20"
+                            height="20"
+                        >
+                            <rect x="2" y="2" width="20" height="20" rx="5" />
+                            <path
+                                d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"
+                            />
+                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                        </svg>
+                        Instagram
+                    </a>
+                    <a
+                        href="https://x.com/elmanaraacademy"
+                        class="contact-social-btn"
+                        target="_blank"
+                        rel="noopener"
+                        id="contact-x"
+                    >
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                            width="20"
+                            height="20"
+                        >
+                            <path
+                                d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"
+                            />
+                        </svg>
+                        X (Twitter)
+                    </a>
+                    <a
+                        href="https://snapchat.com/add/elmanaraacademy"
+                        class="contact-social-btn"
+                        target="_blank"
+                        rel="noopener"
+                        id="contact-snapchat"
+                    >
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                            width="20"
+                            height="20"
+                        >
+                            <path
+                                d="M12.065 2C8.567 2 6.4 4.2 6.4 7.6v.8c-.467.133-.933.267-1.333.4-.4.133-.533.533-.333.867l.667 1.2c-1.067.267-2 .8-2 1.733 0 .333.133.667.4.933.533.533 1.467.733 2.467.867.133.467.4.933.8 1.2-.333.2-.8.4-1.333.4-.4 0-.733.333-.733.733 0 .533.4.8.933.933C6.4 17.333 7.733 18 9.2 18c.933 0 1.733-.267 2.4-.667.133-.067.267-.067.4 0 .667.4 1.467.667 2.4.667 1.467 0 2.8-.667 3.333-1.333.533-.133.933-.4.933-.933 0-.4-.333-.733-.733-.733-.533 0-1-.2-1.333-.4.4-.267.667-.733.8-1.2 1-.133 1.933-.333 2.467-.867.267-.267.4-.6.4-.933 0-.933-.933-1.467-2-1.733l.667-1.2c.2-.333.067-.733-.333-.867-.4-.133-.867-.267-1.333-.4V7.6C17.6 4.2 15.433 2 12.065 2z"
+                            />
+                        </svg>
+                        Snapchat
+                    </a>
+                    <a
+                        href="https://linkedin.com/company/elmanaraacademy"
+                        class="contact-social-btn"
+                        target="_blank"
+                        rel="noopener"
+                        id="contact-linkedin"
+                    >
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                            width="20"
+                            height="20"
+                        >
+                            <path
+                                d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"
+                            />
+                            <circle cx="4" cy="4" r="2" />
+                        </svg>
+                        LinkedIn
+                    </a>
+                    <a
+                        href="https://wa.me/971500000000"
+                        class="contact-social-btn"
+                        target="_blank"
+                        rel="noopener"
+                        id="contact-whatsapp"
+                    >
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                            width="20"
+                            height="20"
+                        >
+                            <path
+                                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"
+                            />
+                            <path
+                                d="M12 0C5.373 0 0 5.373 0 12c0 2.124.558 4.118 1.532 5.845L.054 23.077a.75.75 0 00.931.905l5.079-1.668A11.953 11.953 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.956 0-3.793-.5-5.388-1.381l-.388-.218-4.018 1.32 1.184-4.155-.232-.38A9.96 9.96 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"
+                            />
+                        </svg>
+                        WhatsApp
+                    </a>
+                    <a
+                        href="https://youtube.com/@elmanaraacademy"
+                        class="contact-social-btn"
+                        target="_blank"
+                        rel="noopener"
+                        id="contact-youtube"
+                    >
+                        <svg
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                            width="20"
+                            height="20"
+                        >
+                            <path
+                                d="M22.54 6.42a2.78 2.78 0 00-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 00-1.95 1.96A29 29 0 001 12a29 29 0 00.46 5.58a2.78 2.78 0 001.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 001.95-1.96A29 29 0 0023 12a29 29 0 00-.46-5.58zM9.75 15.02V8.98L15.5 12l-5.75 3.02z"
+                            />
+                        </svg>
+                        YouTube
+                    </a>
+                </div>
             </div>
-          </li>
-          <li>
-            <div class="contact-info-icon">💬</div>
-            <div>
-              <strong>WhatsApp</strong>
-              <a href="https://wa.me/971500000000" target="_blank" rel="noopener">+971 50 000 0000</a>
-            </div>
-          </li>
-          <li>
-            <div class="contact-info-icon">📍</div>
-            <div>
-              <strong>{% if LANGUAGE_CODE == 'ar' %}الموقع{% else %}Location{% endif %}</strong>
-              <span>{% if LANGUAGE_CODE == 'ar' %}الإمارات العربية المتحدة{% else %}United Arab Emirates{% endif %}</span>
-            </div>
-          </li>
-        </ul>
 
-        <!-- Social Media Grid -->
-        <h3 style="font-size:1.1rem;font-weight:700;margin-block:2rem 1rem;">
-          {% if LANGUAGE_CODE == 'ar' %}تجدنا على وسائل التواصل الاجتماعي{% else %}Find Us On Social Media{% endif %}
-        </h3>
-        <div class="contact-social-grid">
-          <a href="https://facebook.com/elmanaraacademy" class="contact-social-btn" target="_blank" rel="noopener" id="contact-facebook">
-            <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
-            Facebook
-          </a>
-          <a href="https://instagram.com/elmanaraacademy" class="contact-social-btn" target="_blank" rel="noopener" id="contact-instagram">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
-            Instagram
-          </a>
-          <a href="https://x.com/elmanaraacademy" class="contact-social-btn" target="_blank" rel="noopener" id="contact-x">
-            <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-            X (Twitter)
-          </a>
-          <a href="https://snapchat.com/add/elmanaraacademy" class="contact-social-btn" target="_blank" rel="noopener" id="contact-snapchat">
-            <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M12.065 2C8.567 2 6.4 4.2 6.4 7.6v.8c-.467.133-.933.267-1.333.4-.4.133-.533.533-.333.867l.667 1.2c-1.067.267-2 .8-2 1.733 0 .333.133.667.4.933.533.533 1.467.733 2.467.867.133.467.4.933.8 1.2-.333.2-.8.4-1.333.4-.4 0-.733.333-.733.733 0 .533.4.8.933.933C6.4 17.333 7.733 18 9.2 18c.933 0 1.733-.267 2.4-.667.133-.067.267-.067.4 0 .667.4 1.467.667 2.4.667 1.467 0 2.8-.667 3.333-1.333.533-.133.933-.4.933-.933 0-.4-.333-.733-.733-.733-.533 0-1-.2-1.333-.4.4-.267.667-.733.8-1.2 1-.133 1.933-.333 2.467-.867.267-.267.4-.6.4-.933 0-.933-.933-1.467-2-1.733l.667-1.2c.2-.333.067-.733-.333-.867-.4-.133-.867-.267-1.333-.4V7.6C17.6 4.2 15.433 2 12.065 2z"/></svg>
-            Snapchat
-          </a>
-          <a href="https://linkedin.com/company/elmanaraacademy" class="contact-social-btn" target="_blank" rel="noopener" id="contact-linkedin">
-            <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
-            LinkedIn
-          </a>
-          <a href="https://wa.me/971500000000" class="contact-social-btn" target="_blank" rel="noopener" id="contact-whatsapp">
-            <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.558 4.118 1.532 5.845L.054 23.077a.75.75 0 00.931.905l5.079-1.668A11.953 11.953 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.956 0-3.793-.5-5.388-1.381l-.388-.218-4.018 1.32 1.184-4.155-.232-.38A9.96 9.96 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
-            WhatsApp
-          </a>
-          <a href="https://youtube.com/@elmanaraacademy" class="contact-social-btn" target="_blank" rel="noopener" id="contact-youtube">
-            <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M22.54 6.42a2.78 2.78 0 00-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 00-1.95 1.96A29 29 0 001 12a29 29 0 00.46 5.58a2.78 2.78 0 001.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 001.95-1.96A29 29 0 0023 12a29 29 0 00-.46-5.58zM9.75 15.02V8.98L15.5 12l-5.75 3.02z"/></svg>
-            YouTube
-          </a>
+            <!-- Contact Form -->
+            <div class="contact-form-col">
+                <h2
+                    style="
+                        font-size: 1.5rem;
+                        font-weight: 800;
+                        margin-block-end: 1.5rem;
+                    "
+                >
+                    Send us a Message
+                </h2>
+                <form
+                    class="contact-form"
+                    method="post"
+                    novalidate
+                    id="contact-form"
+                >
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="contact-name">Your Name</label>
+                        <input
+                            type="text"
+                            id="contact-name"
+                            name="name"
+                            placeholder="Enter your full name"
+                            required
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-email">Your Email</label>
+                        <input
+                            type="email"
+                            id="contact-email"
+                            name="email"
+                            placeholder="example@email.com"
+                            required
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-subject">Subject</label>
+                        <input
+                            type="text"
+                            id="contact-subject"
+                            name="subject"
+                            placeholder="How can we help?"
+                        />
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-message">Message</label>
+                        <textarea
+                            id="contact-message"
+                            name="message"
+                            rows="5"
+                            placeholder="Write your message here…"
+                            required
+                        ></textarea>
+                    </div>
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                        style="inline-size: 100%; justify-content: center"
+                        id="contact-submit"
+                    >
+                        Send Message →
+                    </button>
+                </form>
+            </div>
         </div>
-
-      </div>
-
-      <!-- Contact Form -->
-      <div class="contact-form-col">
-        <h2 style="font-size:1.5rem;font-weight:800;margin-block-end:1.5rem;">
-          {% if LANGUAGE_CODE == 'ar' %}أرسل لنا رسالة{% else %}Send us a Message{% endif %}
-        </h2>
-        <form class="contact-form" method="post" novalidate id="contact-form">
-          {% csrf_token %}
-          <div class="form-group">
-            <label for="contact-name">{% if LANGUAGE_CODE == 'ar' %}اسمك{% else %}Your Name{% endif %}</label>
-            <input type="text" id="contact-name" name="name" placeholder="{% if LANGUAGE_CODE == 'ar' %}أدخل اسمك الكامل{% else %}Enter your full name{% endif %}" required />
-          </div>
-          <div class="form-group">
-            <label for="contact-email">{% if LANGUAGE_CODE == 'ar' %}بريدك الإلكتروني{% else %}Your Email{% endif %}</label>
-            <input type="email" id="contact-email" name="email" placeholder="{% if LANGUAGE_CODE == 'ar' %}example@email.com{% else %}example@email.com{% endif %}" required />
-          </div>
-          <div class="form-group">
-            <label for="contact-subject">{% if LANGUAGE_CODE == 'ar' %}الموضوع{% else %}Subject{% endif %}</label>
-            <input type="text" id="contact-subject" name="subject" placeholder="{% if LANGUAGE_CODE == 'ar' %}كيف يمكننا مساعدتك؟{% else %}How can we help?{% endif %}" />
-          </div>
-          <div class="form-group">
-            <label for="contact-message">{% if LANGUAGE_CODE == 'ar' %}الرسالة{% else %}Message{% endif %}</label>
-            <textarea id="contact-message" name="message" rows="5" placeholder="{% if LANGUAGE_CODE == 'ar' %}اكتب رسالتك هنا…{% else %}Write your message here…{% endif %}" required></textarea>
-          </div>
-          <button type="submit" class="btn btn-primary" style="inline-size:100%;justify-content:center;" id="contact-submit">
-            {% if LANGUAGE_CODE == 'ar' %}إرسال الرسالة{% else %}Send Message{% endif %} →
-          </button>
-        </form>
-      </div>
-
     </div>
-  </div>
 </section>
 
 {% endblock %}

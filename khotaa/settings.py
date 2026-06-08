@@ -34,7 +34,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'el_manara.urls'
+ROOT_URLCONF = 'khotaa.urls'
 
 TEMPLATES = [
     {
@@ -53,7 +53,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'el_manara.wsgi.application'
+WSGI_APPLICATION = 'khotaa.wsgi.application'
 
 DATABASES = {
     'default': {
@@ -104,3 +104,7 @@ CRONJOBS = [
 REFERRAL_REWARD_HOURS = int(os.environ.get('REFERRAL_REWARD_HOURS', 2))
 REFERRAL_WINDOW_DAYS = int(os.environ.get('REFERRAL_WINDOW_DAYS', 30))
 REFERRAL_MONTHLY_CAP = int(os.environ.get('REFERRAL_MONTHLY_CAP', 4))
+
+# ── Google OAuth Settings ─────────────────────────────────────────────────────
+GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID', '')
+GOOGLE_CLIENT_SECRET = os.environ.get('GOOGLE_CLIENT_SECRET', '')

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
-from .models import Subject, HourlyPackage, Purchase
+from .models import Subject, HourlyPackage, Purchase, Session
 
 
 @admin.register(Subject)
@@ -33,3 +33,11 @@ class PurchaseAdmin(admin.ModelAdmin):
     list_filter = ('referral_processed',)
     search_fields = ('student__profile__user__username', 'transaction_id')
     readonly_fields = ('purchased_at', 'hours_at_purchase', 'price_at_purchase')
+
+
+@admin.register(Session)
+class SessionAdmin(admin.ModelAdmin):
+    list_display = ('subject', 'student', 'teacher', 'scheduled_at', 'duration_minutes', 'status')
+    list_filter = ('status', 'scheduled_at')
+    search_fields = ('student__profile__user__username', 'teacher__profile__user__username', 'subject__name_en')
+

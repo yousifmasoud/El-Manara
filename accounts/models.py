@@ -141,3 +141,20 @@ class Referral(models.Model):
 
     def __str__(self):
         return f"{self.referrer} → {self.referred_user} [{self.get_status_display()}]"
+
+
+class GoogleCredential(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='google_credential')
+    access_token = models.TextField()
+    refresh_token = models.TextField(null=True, blank=True)
+    scopes = models.TextField(blank=True)
+    expires_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = _('Google Credential')
+        verbose_name_plural = _('Google Credentials')
+
+    def __str__(self):
+        return f"Google Credential for {self.user.username}"
+

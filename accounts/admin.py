@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
-from .models import UserProfile, StudentProfile, TeacherProfile, ParentProfile, Referral
+from .models import UserProfile, StudentProfile, TeacherProfile, ParentProfile, Referral, GoogleCredential
 
 
 @admin.register(UserProfile)
@@ -37,3 +37,10 @@ class ReferralAdmin(admin.ModelAdmin):
     list_filter = ('status', 'reward_granted')
     search_fields = ('referrer__profile__user__username', 'referred_user__profile__user__username')
     readonly_fields = ('date_created', 'date_completed')
+
+
+@admin.register(GoogleCredential)
+class GoogleCredentialAdmin(admin.ModelAdmin):
+    list_display = ('user', 'expires_at', 'created_at')
+    search_fields = ('user__username', 'user__email')
+

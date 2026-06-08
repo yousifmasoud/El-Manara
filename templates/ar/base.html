@@ -6,9 +6,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta
             name="description"
-            content="{% block meta_desc %}أكاديمية المنارة — تعليم متميز للـ SAT وIELTS وTOEFL وجميع المواد الدراسية.{% endblock %}"
+            content="{% block meta_desc %}أكاديمية خطى — تعليم متميز للـ SAT وIELTS وTOEFL وجميع المواد الدراسية.{% endblock %}"
         />
-        <title>{% block title %}أكاديمية المنارة{% endblock %}</title>
+        <title>{% block title %}أكاديمية خطى{% endblock %}</title>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link
@@ -22,9 +22,11 @@
     <body>
         <nav class="navbar" role="navigation" aria-label="التنقل الرئيسي">
             <div class="container">
-                <a href="{% url 'home' %}" class="nav-logo"
-                    ><span>المنارة</span> Academy</a
-                >
+                <a href="{% url 'home' %}" class="nav-logo">
+                    <img src="{% static 'images/logo_black.svg' %}" class="logo-image logo-black" alt="شعار أكاديمية خطى">
+                    <img src="{% static 'images/logo_white.svg' %}" class="logo-image logo-white" alt="شعار أكاديمية خطى">
+                    <span>خطى</span> Academy
+                </a>
 
                 <ul class="nav-links" id="nav-links" role="list">
                     <li>
@@ -35,7 +37,7 @@
                         >
                     </li>
                     <li>
-                        <a class="nav-link" href="{% url 'packages' %}"
+                        <a class="nav-link {% if request.resolver_match.url_name == 'packages' %}active{% endif %}" href="{% url 'packages' %}"
                             >الباقات</a
                         >
                     </li>
@@ -61,6 +63,31 @@
                             >لوحة التحكم</a
                         >
                     </li>
+                    {% if user.profile.is_student %}
+                    <li>
+                        <a
+                            class="btn btn-primary nav-cta"
+                            href="{% url 'dashboard' %}"
+                            >عرض المساقات</a
+                        >
+                    </li>
+                    {% elif user.profile.is_teacher %}
+                    <li>
+                        <a
+                            class="btn btn-primary nav-cta"
+                            href="{% url 'dashboard' %}"
+                            >عرض الجدول</a
+                        >
+                    </li>
+                    {% else %}
+                    <li>
+                        <a
+                            class="btn btn-primary nav-cta"
+                            href="{% url 'dashboard' %}"
+                            >لوحة التحكم</a
+                        >
+                    </li>
+                    {% endif %}
                     <li>
                         <a class="nav-link" href="{% url 'logout' %}"
                             >تسجيل الخروج</a
@@ -93,9 +120,7 @@
                     class="theme-toggle"
                     id="theme-toggle"
                     aria-label="تبديل الوضع الليلي"
-                >
-                    🌙
-                </button>
+                ><svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
                 <button
                     class="nav-burger"
                     id="nav-burger"
@@ -125,7 +150,9 @@
                     <!-- Brand -->
                     <div class="footer-col footer-brand">
                         <a href="{% url 'home' %}" class="footer-logo">
-                            <span class="footer-logo-ar">المنارة</span> Academy
+                            <img src="{% static 'images/logo_black.svg' %}" class="logo-image logo-black" alt="شعار أكاديمية خطى">
+                            <img src="{% static 'images/logo_white.svg' %}" class="logo-image logo-white" alt="شعار أكاديمية خطى">
+                            <span class="footer-logo-ar">خطى</span> Academy
                         </a>
                         <p class="footer-tagline">
                             تعلّم من أفضل المعلمين وفق جدولك الخاص.
@@ -136,7 +163,7 @@
                             aria-label="تابعنا على وسائل التواصل"
                         >
                             <a
-                                href="https://facebook.com/elmanaraacademy"
+                                href="https://facebook.com/khotaaacademy"
                                 class="social-icon"
                                 aria-label="فيسبوك"
                                 target="_blank"
@@ -149,7 +176,7 @@
                                 </svg>
                             </a>
                             <a
-                                href="https://instagram.com/elmanaraacademy"
+                                href="https://instagram.com/khotaaacademy"
                                 class="social-icon"
                                 aria-label="إنستغرام"
                                 target="_blank"
@@ -183,7 +210,7 @@
                                 </svg>
                             </a>
                             <a
-                                href="https://x.com/elmanaraacademy"
+                                href="https://x.com/khotaaacademy"
                                 class="social-icon"
                                 aria-label="إكس (تويتر)"
                                 target="_blank"
@@ -196,7 +223,7 @@
                                 </svg>
                             </a>
                             <a
-                                href="https://snapchat.com/add/elmanaraacademy"
+                                href="https://snapchat.com/add/khotaaacademy"
                                 class="social-icon"
                                 aria-label="سناب شات"
                                 target="_blank"
@@ -209,7 +236,7 @@
                                 </svg>
                             </a>
                             <a
-                                href="https://linkedin.com/company/elmanaraacademy"
+                                href="https://linkedin.com/company/khotaaacademy"
                                 class="social-icon"
                                 aria-label="لينكد إن"
                                 target="_blank"
@@ -239,7 +266,7 @@
                                 </svg>
                             </a>
                             <a
-                                href="https://youtube.com/@elmanaraacademy"
+                                href="https://youtube.com/@khotaaacademy"
                                 class="social-icon"
                                 aria-label="يوتيوب"
                                 target="_blank"
@@ -279,14 +306,14 @@
                     <div class="footer-col">
                         <h4 class="footer-heading">تواصل معنا</h4>
                         <ul class="footer-contact-list">
-                            <li>
-                                <span class="footer-contact-icon">📧</span>
-                                <a href="mailto:info@elmanaraacademy.com"
-                                    >info@elmanaraacademy.com</a
+                            <li style="display: flex; align-items: center;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-inline-end: 0.5rem;"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                                <a href="mailto:info@khotaaacademy.com"
+                                    >info@khotaaacademy.com</a
                                 >
                             </li>
-                            <li>
-                                <span class="footer-contact-icon">💬</span>
+                            <li style="display: flex; align-items: center;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-inline-end: 0.5rem;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                                 <a
                                     href="https://wa.me/971500000000"
                                     target="_blank"
@@ -294,8 +321,8 @@
                                     >واتساب: ‎+971 50 000 0000</a
                                 >
                             </li>
-                            <li>
-                                <span class="footer-contact-icon">📍</span>
+                            <li style="display: flex; align-items: center;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-inline-end: 0.5rem;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
                                 <span>الإمارات العربية المتحدة</span>
                             </li>
                         </ul>
@@ -305,7 +332,7 @@
                 <div class="footer-bottom">
                     <p>
                         © {% now "Y" %}
-                        <strong class="footer-accent">أكاديمية المنارة</strong>
+                        <strong class="footer-accent">أكاديمية خطى</strong>
                         · جميع الحقوق محفوظة.
                     </p>
                 </div>

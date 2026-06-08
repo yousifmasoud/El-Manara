@@ -11,4 +11,7 @@ urlpatterns = [
     path('dashboard/', views.dashboard, name='dashboard'),
     path('about/', views.about_view, name='about'),
     path('contact/', views.contact_view, name='contact'),
+    # NOTE: google/login/ and google/callback/ are defined in khotaa/urls.py
+    # outside of i18n_patterns to ensure a stable redirect URI for Google OAuth.
+    path('sessions/<int:session_id>/create-meet/', views.create_instant_meeting, name='create_instant_meeting'),
 ]

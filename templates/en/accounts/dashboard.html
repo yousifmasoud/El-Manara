@@ -1,13 +1,13 @@
 {% extends "en/base.html" %}
 {% load humanize %}
 
-{% block title %}Dashboard — El-Manara Academy{% endblock %}
+{% block title %}Dashboard — Khotaa Academy{% endblock %}
 
 {% block content %}
 <section class="section-sm">
   <div class="container">
     <h1 style="font-size:1.8rem;font-weight:800;margin-block-end:1.75rem;">
-      Welcome, {{ user.first_name|default:user.username }} 👋
+      Welcome, {{ user.first_name|default:user.username }}
     </h1>
 
     {% if profile.is_student and student %}
@@ -24,27 +24,38 @@
           <button id="copy-referral" data-code="{{ student.referral_code }}" class="btn btn-outline" style="padding:.25rem .6rem;font-size:.78rem;">Copy</button>
         </div>
         <p style="font-size:.78rem;color:var(--text-muted);margin-block-start:.5rem;">Earn 2 free hours per successful referral (max 4/month).</p>
+        
+        <hr style="border-color:var(--border);margin-block:1rem;" />
+        <p style="font-size:.85rem;font-weight:700;">Google Integration</p>
+        {% if user.google_credential %}
+          <p style="font-size:.8rem;color:#10b981;font-weight:600;display:flex;align-items:center;gap:0.25rem;margin-block-start:0.5rem;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+            Google Linked
+          </p>
+        {% else %}
+          <a href="{% url 'google_login' %}" class="btn btn-google" style="padding:0.4rem 0.75rem;font-size:0.8rem;margin-block-start:0.5rem;inline-size:100%;justify-content:center;">Link Google Account</a>
+        {% endif %}
       </aside>
 
       <div class="dash-main">
         <!-- Stats row -->
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;">
           <div class="stat-card">
-            <div class="stat-icon">⏱️</div>
+            <div class="stat-icon" style="color:var(--accent);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
             <div>
               <div class="stat-value">{{ student.hourly_balance }}</div>
               <div class="stat-label">Hours Balance</div>
             </div>
           </div>
           <div class="stat-card">
-            <div class="stat-icon">🎁</div>
+            <div class="stat-icon" style="color:var(--accent);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12v10H4V12m16-4H4m16 0v4H4V8m16 0a3 3 0 0 0-3-3H7a3 3 0 0 0-3 3"/></svg></div>
             <div>
               <div class="stat-value">{{ referrals|length }}</div>
               <div class="stat-label">Total Referrals</div>
             </div>
           </div>
           <div class="stat-card">
-            <div class="stat-icon">✅</div>
+            <div class="stat-icon" style="color:var(--accent);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14M22 4L12 14.01l-3-3"/></svg></div>
             <div>
               <div class="stat-value">{{ referrals|dictsort:"status"|length }}</div>
               <div class="stat-label">Purchases</div>
@@ -53,13 +64,47 @@
         </div>
 
         <!-- Purchase CTA -->
-        <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+        <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-block-end:1.5rem;">
           <a href="{% url 'packages' %}" class="btn btn-primary" id="dash-buy-hours">Buy More Hours</a>
+        </div>
+
+        <!-- ══ CALENDAR & MEETINGS SECTION ══════════════════════ -->
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-block-end:1rem;flex-wrap:wrap;gap:0.5rem;">
+          <h3 style="font-weight:700;margin:0;">Your Lesson Schedule</h3>
+          {% if student.hourly_balance > 0 %}
+            <a href="{% url 'create_session' %}" class="btn btn-primary" style="padding:0.5rem 1.25rem;font-size:0.88rem;border-radius:var(--radius-sm);">+ Schedule Session</a>
+          {% else %}
+            <a href="{% url 'packages' %}" class="btn btn-outline" style="padding:0.5rem 1.25rem;font-size:0.88rem;border-radius:var(--radius-sm);">Buy Hours to Schedule</a>
+          {% endif %}
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1.2fr;gap:1.5rem;align-items:start;margin-block-end:2rem;" class="schedule-container">
+          <!-- Calendar Card -->
+          <div class="calendar-card" style="margin-block-end:0;">
+            <div class="calendar-header">
+              <button type="button" id="prev-month" class="btn-cal">&lt;</button>
+              <h3 id="calendar-month-year" style="margin:0;">June 2026</h3>
+              <button type="button" id="next-month" class="btn-cal">&gt;</button>
+            </div>
+            <div class="calendar-weekdays">
+              <div>Su</div><div>Mo</div><div>Tu</div><div>We</div><div>Th</div><div>Fr</div><div>Sa</div>
+            </div>
+            <div class="calendar-days" id="calendar-days"></div>
+          </div>
+          
+          <!-- Meetings Card -->
+          <div class="meetings-section" style="margin-block-end:0;min-block-size:310px;display:flex;flex-direction:column;">
+            <h3 style="margin-block-start:0;font-size:1.1rem;font-weight:700;">
+              Meetings for <span id="selected-date-label" style="color:var(--accent);">Today</span>
+            </h3>
+            <div id="meetings-list-container" style="flex:1;">
+              <!-- Renders dynamically -->
+            </div>
+          </div>
         </div>
 
         <!-- Recent purchases -->
         {% if purchases %}
-        <div style="background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius);padding:1.5rem;">
+        <div style="background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-block-end:1.5rem;">
           <h3 style="font-weight:700;margin-block-end:1rem;">Recent Purchases</h3>
           <table style="inline-size:100%;border-collapse:collapse;font-size:.88rem;">
             <thead>
@@ -124,13 +169,55 @@
         <hr style="border-color:var(--border);margin-block:1rem;" />
         <p><strong>Rate:</strong> ${{ teacher.hourly_rate }}/hr</p>
         <p style="margin-block-start:.5rem;"><strong>Status:</strong>
-          {% if teacher.is_verified %}✅ Verified{% else %}⏳ Pending Verification{% endif %}
+          {% if teacher.is_verified %}<span class="status-badge verified">Verified</span>{% else %}<span class="status-badge pending">Pending Verification</span>{% endif %}
         </p>
+
+        <hr style="border-color:var(--border);margin-block:1rem;" />
+        <p style="font-size:.85rem;font-weight:700;">Google Integration</p>
+        {% if user.google_credential %}
+          <p style="font-size:.8rem;color:#10b981;font-weight:600;display:flex;align-items:center;gap:0.25rem;margin-block-start:0.5rem;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+            Google Linked
+          </p>
+        {% else %}
+          <a href="{% url 'google_login' %}" class="btn btn-google" style="padding:0.4rem 0.75rem;font-size:0.8rem;margin-block-start:0.5rem;inline-size:100%;justify-content:center;">Link Google Account</a>
+        {% endif %}
       </aside>
       <div class="dash-main">
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;">
-          <div class="stat-card"><div class="stat-icon">⭐</div><div><div class="stat-value">{{ teacher.rating }}</div><div class="stat-label">Rating</div></div></div>
-          <div class="stat-card"><div class="stat-icon">🎓</div><div><div class="stat-value">{{ teacher.total_sessions }}</div><div class="stat-label">Sessions</div></div></div>
+        <!-- Stats row -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-block-end:1.5rem;">
+          <div class="stat-card"><div class="stat-icon" style="color:var(--accent);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><div><div class="stat-value">{{ teacher.rating }}</div><div class="stat-label">Rating</div></div></div>
+          <div class="stat-card"><div class="stat-icon" style="color:var(--accent);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5zM6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/></svg></div><div><div class="stat-value">{{ sessions|length }}</div><div class="stat-label">Total Sessions</div></div></div>
+        </div>
+
+        <!-- ══ CALENDAR & MEETINGS SECTION ══════════════════════ -->
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-block-end:1rem;flex-wrap:wrap;gap:0.5rem;">
+          <h3 style="font-weight:700;margin:0;">Your Tutoring Schedule</h3>
+          <a href="{% url 'create_session' %}" class="btn btn-primary" style="padding:0.5rem 1.25rem;font-size:0.88rem;border-radius:var(--radius-sm);">+ Schedule Session</a>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1.2fr;gap:1.5rem;align-items:start;" class="schedule-container">
+          <!-- Calendar Card -->
+          <div class="calendar-card" style="margin-block-end:0;">
+            <div class="calendar-header">
+              <button type="button" id="prev-month" class="btn-cal">&lt;</button>
+              <h3 id="calendar-month-year" style="margin:0;">June 2026</h3>
+              <button type="button" id="next-month" class="btn-cal">&gt;</button>
+            </div>
+            <div class="calendar-weekdays">
+              <div>Su</div><div>Mo</div><div>Tu</div><div>We</div><div>Th</div><div>Fr</div><div>Sa</div>
+            </div>
+            <div class="calendar-days" id="calendar-days"></div>
+          </div>
+          
+          <!-- Meetings Card -->
+          <div class="meetings-section" style="margin-block-end:0;min-block-size:310px;display:flex;flex-direction:column;">
+            <h3 style="margin-block-start:0;font-size:1.1rem;font-weight:700;">
+              Meetings for <span id="selected-date-label" style="color:var(--accent);">Today</span>
+            </h3>
+            <div id="meetings-list-container" style="flex:1;">
+              <!-- Renders dynamically -->
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -147,22 +234,274 @@
         </p>
       </aside>
       <div class="dash-main">
-        <h3 style="font-weight:700;">Children's Balances</h3>
-        {% for child in children %}
-        <div class="stat-card">
-          <div class="stat-icon">🎓</div>
-          <div>
-            <div class="stat-value">{{ child.hourly_balance }}h</div>
-            <div class="stat-label">{{ child.profile.user.get_full_name|default:child.profile.user.username }}</div>
+        <h3 style="font-weight:700;margin-block-end:1.5rem;">Children's Balances</h3>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1rem;">
+          {% for child in children %}
+          <div class="stat-card">
+            <div class="stat-icon" style="color:var(--accent);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5zM6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/></svg></div>
+            <div>
+              <div class="stat-value">{{ child.hourly_balance }}h</div>
+              <div class="stat-label">{{ child.profile.user.get_full_name|default:child.profile.user.username }}</div>
+            </div>
           </div>
+          {% empty %}
+          <p style="color:var(--text-muted);">No children linked yet. Ask your child to add you from their account.</p>
+          {% endfor %}
         </div>
-        {% empty %}
-        <p style="color:var(--text-muted);">No children linked yet. Ask your child to add you from their account.</p>
-        {% endfor %}
       </div>
     </div>
     {% endif %}
 
   </div>
 </section>
+
+<!-- CSRF Token for meeting AJAX POSTs -->
+<div style="display:none;">
+  <form id="csrf-holder">{% csrf_token %}</form>
+  <input type="hidden" id="create-meet-url-tpl" value="{% url 'create_instant_meeting' session_id=0 %}">
+  <input type="hidden" id="cancel-session-url-tpl" value="{% url 'cancel_session' session_id=0 %}">
+</div>
+
+<!-- Raw Session Data passed securely from backend -->
+<script id="sessions-json" type="application/json">
+  [
+    {% for s in sessions %}
+    {
+      "id": {{ s.id }},
+      "subject": "{{ s.subject.name_en|default:'Tutoring Session' }}",
+      "teacher": "{{ s.teacher.profile.user.get_full_name|default:s.teacher.profile.user.username|escapejs }}",
+      "student": "{{ s.student.profile.user.get_full_name|default:s.student.profile.user.username|escapejs }}",
+      "scheduled_at": "{{ s.scheduled_at|date:'Y-m-d H:i' }}",
+      "duration": {{ s.duration_minutes }},
+      "meeting_link": "{{ s.meeting_link|default:'' }}",
+      "status": "{{ s.status }}"
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+  ]
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  // Load raw sessions
+  let sessions = [];
+  try {
+    const rawData = document.getElementById("sessions-json").textContent;
+    sessions = JSON.parse(rawData);
+  } catch (e) {
+    console.error("Error parsing sessions JSON:", e);
+  }
+
+  // Setup Date and Month variables
+  let currentDate = new Date();
+  let currentMonth = currentDate.getMonth();
+  let currentYear = currentDate.getFullYear();
+  let selectedDate = new Date(); // defaults to today
+
+  const monthYearLabel = document.getElementById("calendar-month-year");
+  const calendarDays = document.getElementById("calendar-days");
+  const selectedDateLabel = document.getElementById("selected-date-label");
+  const meetingsContainer = document.getElementById("meetings-list-container");
+  const csrfToken = document.querySelector("#csrf-holder [name=csrfmiddlewaretoken]").value;
+  const createMeetUrlTpl = document.getElementById("create-meet-url-tpl").value;
+  const cancelUrlTpl = document.getElementById("cancel-session-url-tpl").value;
+
+  const monthNames = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
+
+  // Helper function to check if a specific day has meetings
+  function getMeetingsForDate(dateObj) {
+    const yyyy = dateObj.getFullYear();
+    const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const dd = String(dateObj.getDate()).padStart(2, '0');
+    const targetDateStr = `${yyyy}-${mm}-${dd}`;
+    
+    return sessions.filter(s => s.scheduled_at.startsWith(targetDateStr));
+  }
+
+  // Render the Calendar Days
+  function renderCalendar() {
+    if (!calendarDays) return;
+    calendarDays.innerHTML = "";
+    
+    monthYearLabel.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+
+    // Get first day of the month and total number of days
+    const firstDayIndex = new Date(currentYear, currentMonth, 1).getDay();
+    const totalDays = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+    // Render empty spaces for previous month's weekday offset
+    for (let i = 0; i < firstDayIndex; i++) {
+      const emptyCell = document.createElement("div");
+      emptyCell.className = "calendar-day empty";
+      calendarDays.appendChild(emptyCell);
+    }
+
+    // Render active days of the current month
+    for (let day = 1; day <= totalDays; day++) {
+      const dayCell = document.createElement("div");
+      dayCell.className = "calendar-day";
+      dayCell.textContent = day;
+
+      const dateObj = new Date(currentYear, currentMonth, day);
+      
+      // Highlight "today"
+      const today = new Date();
+      if (dateObj.toDateString() === today.toDateString()) {
+        dayCell.classList.add("today");
+      }
+
+      // Highlight selected day
+      if (dateObj.toDateString() === selectedDate.toDateString()) {
+        dayCell.classList.add("selected");
+      }
+
+      // Highlight days with meetings
+      const dayMeetings = getMeetingsForDate(dateObj);
+      if (dayMeetings.length > 0) {
+        dayCell.classList.add("has-meeting");
+      }
+
+      // Handle day clicks
+      dayCell.addEventListener("click", () => {
+        selectedDate = dateObj;
+        
+        // Remove selected class from others and add to clicked
+        document.querySelectorAll(".calendar-day").forEach(c => c.classList.remove("selected"));
+        dayCell.classList.add("selected");
+        
+        updateMeetingsList();
+      });
+
+      calendarDays.appendChild(dayCell);
+    }
+  }
+
+  // Format date readable string
+  function formatDateLabel(dateObj) {
+    const today = new Date();
+    if (dateObj.toDateString() === today.toDateString()) return "Today";
+    
+    const options = { weekday: 'short', month: 'short', day: 'numeric' };
+    return dateObj.toLocaleDateString("en-US", options);
+  }
+
+  // Update Meetings List under Calendar
+  function updateMeetingsList() {
+    if (!meetingsContainer) return;
+    meetingsContainer.innerHTML = "";
+    
+    selectedDateLabel.textContent = formatDateLabel(selectedDate);
+    const dayMeetings = getMeetingsForDate(selectedDate);
+
+    if (dayMeetings.length === 0) {
+      meetingsContainer.innerHTML = `<p style="color:var(--text-muted);font-size:0.88rem;margin-block:1.5rem;text-align:center;">No sessions scheduled for this day.</p>`;
+      return;
+    }
+
+    const listUl = document.createElement("ul");
+    listUl.className = "meetings-list";
+
+    dayMeetings.forEach(meeting => {
+      const li = document.createElement("li");
+      li.className = "meeting-card";
+      
+      // Parse time
+      const dateParts = meeting.scheduled_at.split(" ");
+      const timeStr = dateParts[1] || "";
+      
+      // Determine partner role display
+      const isTeacher = {% if profile.is_teacher %}true{% else %}false{% endif %};
+      const partnerName = isTeacher ? `Student: ${meeting.student}` : `Tutor: ${meeting.teacher}`;
+
+      let actionHTML = "";
+      if (meeting.meeting_link) {
+        actionHTML = `
+          <div class="meeting-actions">
+            <a href="${meeting.meeting_link}" target="_blank" rel="noopener" class="btn-meet btn-meet-primary">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:middle;"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+              Join Google Meet
+            </a>
+          </div>
+        `;
+      } else {
+        actionHTML = `
+          <div class="meeting-actions">
+            <form method="post" action="${createMeetUrlTpl.replace('/0/', '/' + meeting.id + '/')}">
+              <input type="hidden" name="csrfmiddlewaretoken" value="${csrfToken}">
+              <button type="submit" class="btn-meet btn-meet-outline">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline-block;vertical-align:middle;"><path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                Create Google Meet Link
+              </button>
+            </form>
+          </div>
+        `;
+      }
+
+      // Render cancel action for scheduled sessions
+      let cancelHTML = "";
+      if (meeting.status === "scheduled") {
+        const cancelUrl = cancelUrlTpl.replace('/0/', '/' + meeting.id + '/');
+        const isArabic = document.documentElement.lang === "ar" || document.documentElement.dir === "rtl";
+        const cancelLabel = isArabic ? "إلغاء الحصة" : "Cancel Session";
+        const confirmMsg = isArabic ? "هل أنت متأكد من إلغاء هذه الحصة؟" : "Are you sure you want to cancel this session?";
+        cancelHTML = `
+          <form method="post" action="${cancelUrl}" style="display:inline-block;margin-block-start:0.5rem;" onsubmit="return confirm('${confirmMsg}');">
+            <input type="hidden" name="csrfmiddlewaretoken" value="${csrfToken}">
+            <button type="submit" class="btn-meet btn-meet-outline" style="border-color:#ef4444;color:#ef4444;margin-inline-start:0.5rem;">
+              ${cancelLabel}
+            </button>
+          </form>
+        `;
+      }
+
+      li.innerHTML = `
+        <div class="meeting-meta">
+          <span>${timeStr} (${meeting.duration} mins)</span>
+          <span style="text-transform:uppercase;font-weight:700;font-size:0.7rem;color:var(--accent);">${meeting.status}</span>
+        </div>
+        <div class="meeting-title">${meeting.subject}</div>
+        <div style="font-size:0.85rem;color:var(--text);font-weight:500;">${partnerName}</div>
+        ${actionHTML}
+        ${cancelHTML}
+      `;
+      
+      listUl.appendChild(li);
+    });
+
+    meetingsContainer.appendChild(listUl);
+  }
+
+  // Attach Next/Prev Month Click Listeners
+  const prevBtn = document.getElementById("prev-month");
+  const nextBtn = document.getElementById("next-month");
+
+  if (prevBtn) {
+    prevBtn.addEventListener("click", () => {
+      currentMonth--;
+      if (currentMonth < 0) {
+        currentMonth = 11;
+        currentYear--;
+      }
+      renderCalendar();
+    });
+  }
+
+  if (nextBtn) {
+    nextBtn.addEventListener("click", () => {
+      currentMonth++;
+      if (currentMonth > 11) {
+        currentMonth = 0;
+        currentYear++;
+      }
+      renderCalendar();
+    });
+  }
+
+  // Initial runs
+  renderCalendar();
+  updateMeetingsList();
+});
+</script>
 {% endblock %}

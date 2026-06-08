@@ -1,13 +1,11 @@
 /* ── Dark Mode Toggle ──────────────────────────────────────── */
 (function () {
   const ROOT = document.documentElement;
-  const STORAGE_KEY = 'elmanara-theme';
+  const STORAGE_KEY = 'khotaa-theme';
 
   function applyTheme(theme) {
     ROOT.setAttribute('data-theme', theme);
     localStorage.setItem(STORAGE_KEY, theme);
-    const btn = document.getElementById('theme-toggle');
-    if (btn) btn.textContent = theme === 'dark' ? '☀️' : '🌙';
   }
 
   // Respect saved preference or OS preference
@@ -110,7 +108,7 @@
         const code = this.dataset.code;
         navigator.clipboard.writeText(code).then(() => {
           const original = this.textContent;
-          this.textContent = '✅ Copied!';
+          this.textContent = 'Copied!';
           setTimeout(() => { this.textContent = original; }, 2000);
         });
       });

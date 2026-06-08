@@ -1,5 +1,5 @@
 import os
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'el_manara.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'khotaa.settings')
 application = get_wsgi_application()

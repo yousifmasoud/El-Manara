@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════
-   El-Manara Academy — main.css
+   Khotaa Academy — main.css
    CSS Logical Properties throughout (auto RTL/LTR flip)
    Tokens: White + Turquoise (#00c9c9), Dark Mode support
 ═══════════════════════════════════════════════════════════════ */
@@ -9,7 +9,7 @@
 /* ── CSS Custom Properties ───────────────────────────────────── */
 :root {
     --accent: #008b8b;
-    --accent-dark: #008b8b;
+    --accent-dark: #006666;
     --accent-light: #e0fafa;
     --bg: #ffffff;
     --surface: #f4fdfd;
@@ -17,8 +17,8 @@
     --border: #d0eeee;
     --text: #0f2535;
     --text-muted: #5a7a8a;
-    --shadow: 0 4px 24px rgba(0, 180, 180, 0.1);
-    --shadow-hover: 0 8px 40px rgba(0, 180, 180, 0.22);
+    --shadow: 0 4px 24px rgba(0, 139, 139, 0.1);
+    --shadow-hover: 0 8px 40px rgba(0, 139, 139, 0.22);
     --radius: 14px;
     --radius-sm: 8px;
     --transition: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
@@ -35,7 +35,7 @@
     --text: #e4f4f6;
     --text-muted: #7aabb8;
     --shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
-    --shadow-hover: 0 8px 40px rgba(0, 180, 180, 0.28);
+    --shadow-hover: 0 8px 40px rgba(0, 139, 139, 0.28);
 }
 
 /* ── Reset & Base ────────────────────────────────────────────── */
@@ -122,15 +122,40 @@ ul {
     gap: 1.5rem;
 }
 .nav-logo {
-    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.55rem;
     font-weight: 800;
     color: var(--accent);
     letter-spacing: -0.5px;
     margin-inline-end: auto;
+    text-decoration: none;
+    margin-inline-start: -0.75rem;
 }
 .nav-logo span {
     color: var(--text);
 }
+
+/* --- SVG Logo Styles --- */
+.logo-image {
+    block-size: 2.1rem;
+    inline-size: auto;
+    flex-shrink: 0;
+}
+.logo-white {
+    display: none;
+}
+.logo-black {
+    display: block;
+}
+[data-theme="dark"] .logo-white {
+    display: block;
+}
+[data-theme="dark"] .logo-black {
+    display: none;
+}
+
 
 .nav-links {
     display: flex;
@@ -154,7 +179,7 @@ ul {
 }
 [data-theme="dark"] .nav-link:hover,
 [data-theme="dark"] .nav-link.active {
-    background: rgba(0, 180, 180, 0.15);
+    background: rgba(0, 139, 139, 0.15);
     color: var(--accent);
 }
 
@@ -228,7 +253,7 @@ ul {
     text-align: center;
     background: radial-gradient(
         ellipse 70% 60% at 50% -10%,
-        rgba(0, 201, 201, 0.12) 0%,
+        rgba(0, 139, 139, 0.12) 0%,
         transparent 70%
     );
 }
@@ -244,10 +269,10 @@ ul {
     font-weight: 700;
     letter-spacing: 0.03em;
     margin-block-end: 1.5rem;
-    border: 1px solid rgba(0, 180, 180, 0.25);
+    border: 1px solid rgba(0, 139, 139, 0.25);
 }
 [data-theme="dark"] .hero-badge {
-    background: rgba(0, 180, 180, 0.12);
+    background: rgba(0, 139, 139, 0.12);
     color: var(--accent);
 }
 
@@ -283,12 +308,12 @@ ul {
 .btn-primary {
     background: var(--accent);
     color: #fff;
-    box-shadow: 0 4px 20px rgba(0, 180, 180, 0.35);
+    box-shadow: 0 4px 20px rgba(0, 139, 139, 0.35);
 }
 .btn-primary:hover {
     background: var(--accent-dark);
     color: #fff;
-    box-shadow: 0 6px 30px rgba(0, 180, 180, 0.5);
+    box-shadow: 0 6px 30px rgba(0, 139, 139, 0.5);
     transform: translateY(-2px);
 }
 .btn-outline {
@@ -360,7 +385,7 @@ ul {
     background: var(--surface-2);
 }
 .subject-card:hover .subject-icon {
-    filter: drop-shadow(0 0 8px rgba(0, 180, 180, 0.6));
+    filter: drop-shadow(0 0 8px rgba(0, 139, 139, 0.6));
 }
 .subject-icon {
     inline-size: 52px;
@@ -394,7 +419,7 @@ ul {
         var(--accent-dark) 100%
     );
     color: #fff;
-    box-shadow: 0 8px 32px rgba(0, 180, 180, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 139, 139, 0.3);
     transition: all var(--transition);
     display: flex;
     flex-direction: column;
@@ -422,7 +447,7 @@ ul {
 }
 .test-prep-card:hover {
     transform: translateY(-8px);
-    box-shadow: 0 16px 48px rgba(0, 180, 180, 0.45);
+    box-shadow: 0 16px 48px rgba(0, 139, 139, 0.45);
 }
 .test-prep-badge {
     display: inline-flex;
@@ -524,7 +549,7 @@ input[type="range"]::-webkit-slider-thumb {
     block-size: 22px;
     border-radius: 50%;
     background: var(--accent);
-    box-shadow: 0 2px 8px rgba(0, 180, 180, 0.4);
+    box-shadow: 0 2px 8px rgba(0, 139, 139, 0.4);
     transition: transform var(--transition);
 }
 input[type="range"]::-webkit-slider-thumb:hover {
@@ -559,7 +584,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
     font-size: 0.82rem;
 }
 [data-theme="dark"] .savings-badge {
-    background: rgba(0, 180, 180, 0.15);
+    background: rgba(0, 139, 139, 0.15);
     color: var(--accent);
 }
 
@@ -589,12 +614,12 @@ input[type="range"]::-webkit-slider-thumb:hover {
     border-color: var(--accent);
     background: linear-gradient(
         135deg,
-        rgba(0, 201, 201, 0.06) 0%,
+        rgba(0, 139, 139, 0.06) 0%,
         var(--bg) 100%
     );
 }
 .pkg-card.featured::before {
-    content: "⭐ " attr(data-badge);
+    content: attr(data-badge);
     position: absolute;
     inset-block-start: -1px;
     inset-inline-end: 1.25rem;
@@ -637,7 +662,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
     padding: 2rem;
     background: radial-gradient(
         ellipse 60% 50% at 50% 0%,
-        rgba(0, 201, 201, 0.08) 0%,
+        rgba(0, 139, 139, 0.08) 0%,
         transparent 65%
     );
 }
@@ -688,7 +713,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
     color: var(--accent-dark);
 }
 [data-theme="dark"] .role-tab.active {
-    background: rgba(0, 180, 180, 0.15);
+    background: rgba(0, 139, 139, 0.15);
     color: var(--accent);
 }
 
@@ -722,7 +747,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
 .form-group select:focus,
 .form-group textarea:focus {
     border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(0, 201, 201, 0.15);
+    box-shadow: 0 0 0 3px rgba(0, 139, 139, 0.15);
 }
 .form-group textarea {
     resize: vertical;
@@ -762,9 +787,9 @@ input[type="range"]::-webkit-slider-thumb:hover {
     border: 1px solid rgba(239, 68, 68, 0.25);
 }
 .message.info {
-    background: rgba(0, 201, 201, 0.1);
+    background: rgba(0, 139, 139, 0.1);
     color: var(--accent-dark);
-    border: 1px solid rgba(0, 201, 201, 0.25);
+    border: 1px solid rgba(0, 139, 139, 0.25);
 }
 
 /* ── Dashboard ──────────────────────────────────────────────── */
@@ -806,7 +831,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
     flex-shrink: 0;
 }
 [data-theme="dark"] .stat-icon {
-    background: rgba(0, 180, 180, 0.15);
+    background: rgba(0, 139, 139, 0.15);
 }
 .stat-value {
     font-size: 1.8rem;
@@ -831,11 +856,18 @@ input[type="range"]::-webkit-slider-thumb:hover {
     margin-block-end: 2.5rem;
 }
 .footer-logo {
-    font-size: 1.35rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.5rem;
     font-weight: 800;
     color: var(--accent);
-    display: inline-block;
     margin-block-end: 0.75rem;
+    text-decoration: none;
+    margin-inline-start: -0.5rem;
+}
+.footer-logo .logo-image {
+    block-size: 2rem;
 }
 .footer-logo-ar {
     color: var(--text);
@@ -1017,7 +1049,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
     flex-shrink: 0;
 }
 [data-theme="dark"] .contact-info-icon {
-    background: rgba(0, 180, 180, 0.15);
+    background: rgba(0, 139, 139, 0.15);
 }
 .contact-info-list strong {
     display: block;
@@ -1061,7 +1093,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
     transform: translateY(-2px);
 }
 [data-theme="dark"] .contact-social-btn:hover {
-    background: rgba(0, 180, 180, 0.15);
+    background: rgba(0, 139, 139, 0.15);
     color: var(--accent);
 }
 
@@ -1121,3 +1153,279 @@ input[type="range"]::-webkit-slider-thumb:hover {
         grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     }
 }
+
+/* ── SVGs & Status Badges ───────────────────────────────────── */
+.theme-toggle svg {
+    inline-size: 18px;
+    block-size: 18px;
+    display: block;
+    fill: none;
+    stroke: var(--text);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: fill var(--transition), stroke var(--transition);
+}
+
+[data-theme="dark"] .theme-toggle {
+    background: #ffffff !important;
+    border-color: #ffffff !important;
+}
+[data-theme="dark"] .theme-toggle svg {
+    fill: #000000 !important;
+    stroke: #000000 !important;
+}
+
+svg.value-check {
+    color: #10b981;
+    margin-inline-end: 0.5rem;
+    vertical-align: middle;
+    display: inline-block;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2rem 0.65rem;
+    border-radius: 99px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+}
+.status-badge.verified {
+    background: rgba(16, 185, 129, 0.12);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+.status-badge.pending {
+    background: rgba(245, 158, 11, 0.12);
+    color: #f59e0b;
+    border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+/* --- Google Login Button --- */
+.btn-google {
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    color: var(--text);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.65rem 1rem;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: var(--transition);
+    text-decoration: none;
+    box-shadow: var(--shadow);
+}
+.btn-google:hover {
+    background: var(--surface);
+    border-color: var(--accent);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-hover);
+}
+.btn-google svg {
+    margin-inline-end: 0.5rem;
+    flex-shrink: 0;
+}
+
+/* --- Calendar Widget --- */
+.calendar-card {
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    margin-block-end: 1.5rem;
+}
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-block-end: 1.25rem;
+}
+.calendar-header h3 {
+    font-weight: 800;
+    font-size: 1.15rem;
+    color: var(--text);
+}
+.btn-cal {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    color: var(--text);
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    cursor: pointer;
+    transition: var(--transition);
+}
+.btn-cal:hover {
+    background: var(--accent-light);
+    border-color: var(--accent);
+    color: var(--accent-dark);
+}
+.calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-block-end: 0.5rem;
+    text-transform: uppercase;
+}
+.calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+}
+.calendar-day {
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    color: var(--text);
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+    border: 1px solid transparent;
+}
+.calendar-day:hover {
+    background: var(--surface-2);
+}
+.calendar-day.empty {
+    background: transparent;
+    cursor: default;
+}
+.calendar-day.empty:hover {
+    background: transparent;
+}
+.calendar-day.today {
+    border-color: var(--accent);
+    font-weight: 800;
+    color: var(--accent-dark);
+}
+.calendar-day.selected {
+    background: var(--accent);
+    color: #ffffff;
+    font-weight: 800;
+}
+.calendar-day.selected.today {
+    color: #ffffff;
+}
+.calendar-day.has-meeting::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+}
+.calendar-day.selected.has-meeting::after {
+    background: #ffffff;
+}
+
+/* Meeting Cards in Dashboard */
+.meetings-section {
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    margin-block-end: 1.5rem;
+}
+.meetings-section h3 {
+    font-weight: 800;
+    font-size: 1.2rem;
+    margin-block-end: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.meetings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0;
+    margin: 0;
+}
+.meeting-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    transition: var(--transition);
+}
+.meeting-card:hover {
+    border-color: var(--accent);
+    transform: translateX(3px);
+}
+[dir="rtl"] .meeting-card:hover {
+    transform: translateX(-3px);
+}
+.meeting-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+.meeting-title {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--text);
+}
+.meeting-notes {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    border-inline-start: 2px solid var(--border);
+    padding-inline-start: 0.5rem;
+    margin: 0;
+}
+.meeting-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-block-start: 0.25rem;
+}
+.btn-meet {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    cursor: pointer;
+    transition: var(--transition);
+}
+.btn-meet-primary {
+    background: var(--accent);
+    color: #ffffff;
+    border: 1px solid var(--accent);
+}
+.btn-meet-primary:hover {
+    background: var(--accent-dark);
+}
+.btn-meet-outline {
+    background: transparent;
+    color: var(--accent-dark);
+    border: 1.5px solid var(--accent);
+}
+.btn-meet-outline:hover {
+    background: var(--accent-light);
+}
+

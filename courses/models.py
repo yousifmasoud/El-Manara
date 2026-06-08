@@ -17,7 +17,7 @@ class Subject(models.Model):
     test_prep_badge = models.CharField(max_length=20, blank=True, help_text='e.g. SAT, IELTS, TOEFL')
     is_active = models.BooleanField(default=True)
     order = models.PositiveSmallIntegerField(default=0)
-    color_accent = models.CharField(max_length=7, default='#00c9c9', help_text='Hex color for card accent')
+    color_accent = models.CharField(max_length=7, default='#008b8b', help_text='Hex color for card accent')
 
     class Meta:
         ordering = ['order', 'name_en']
@@ -163,3 +163,43 @@ class Purchase(models.Model):
         referrer.save(update_fields=['hourly_balance'])
 
         Purchase.objects.filter(pk=self.pk).update(referral_processed=True)
+
+
+class Session(models.Model):
+    STATUS_SCHEDULED = 'scheduled'
+    STATUS_COMPLETED = 'completed'
+    STATUS_CANCELED = 'canceled'
+
+    STATUS_CHOICES = [
+        (STATUS_SCHEDULED, _('Scheduled')),
+        (STATUS_COMPLETED, _('Completed')),
+        (STATUS_CANCELED, _('Canceled')),
+    ]
+
+    student = models.ForeignKey(
+        'accounts.StudentProfile', on_delete=models.CASCADE, related_name='sessions'
+    )
+    teacher = models.ForeignKey(
+        'accounts.TeacherProfile', on_delete=models.CASCADE, related_name='sessions'
+    )
+    subject = models.ForeignKey(
+        Subject, on_delete=models.SET_NULL, null=True, blank=True, related_name='sessions'
+    )
+    scheduled_at = models.DateTimeField(verbose_name=_('Scheduled At'))
+    duration_minutes = models.PositiveIntegerField(default=60, verbose_name=_('Duration (minutes)'))
+    meeting_link = models.URLField(blank=True, verbose_name=_('Meeting Link'))
+    status = models.CharField(
+        max_length=20, choices=STATUS_CHOICES, default=STATUS_SCHEDULED, verbose_name=_('Status')
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    notes = models.TextField(blank=True, verbose_name=_('Notes'))
+
+    class Meta:
+        ordering = ['scheduled_at']
+        verbose_name = _('Session')
+        verbose_name_plural = _('Sessions')
+
+    def __str__(self):
+        subject_name = self.subject.name_en if self.subject else _('No Subject')
+        return f"{subject_name} with {self.teacher} on {self.scheduled_at}"
+

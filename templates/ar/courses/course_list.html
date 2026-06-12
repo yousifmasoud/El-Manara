@@ -1,0 +1,144 @@
+{% extends "ar/base.html" %}
+{% block title %}المساقات والمواد الدراسية — أكاديمية خطى{% endblock %}
+{% block meta_desc %}تصفح المواد الأكاديمية والبرامج التحضيرية في أكاديمية خطى. يمكن للطلاب التسجيل مباشرة، ويمكن لأولياء الأمور تسجيل أبنائهم، ويمكن للمعلمين تقديم طلبات تدريس المواد.{% endblock %}
+
+{% block content %}
+<section class="section courses-section" aria-labelledby="courses-heading">
+  <div class="container">
+    <div class="section-heading">
+      <h1 id="courses-heading">المساقات والمواد الدراسية</h1>
+      <p>استكشف مجموعتنا الواسعة من المواد الأكاديمية وبرامج التحضير للاختبارات المصممة لتناسب أهدافك التعليمية.</p>
+      <span class="accent-line"></span>
+    </div>
+
+    <!-- شبكة المساقات -->
+    <div class="packages-grid" role="list" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));">
+      {% for subject in subjects %}
+      <article class="pkg-card" role="listitem" style="border-top: 4px solid {{ subject.color_accent }}; display: flex; flex-direction: column; justify-content: space-between; min-height: 320px;">
+        <div>
+          <!-- رأس البطاقة والوسوم -->
+          <div style="display: flex; justify-content: space-between; align-items: start; margin-block-end: 1rem;">
+            <div style="font-size: 2.25rem; color: {{ subject.color_accent }}; display: flex; align-items: center; justify-content: center; width: 50px; height: 50px; background: rgba(0, 139, 139, 0.05); border-radius: var(--radius-sm);">
+              {% if subject.icon_svg %}
+                {{ subject.icon_svg|safe }}
+              {% else %}
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+              {% endif %}
+            </div>
+            {% if subject.is_test_prep %}
+              <span class="savings-badge" style="background: rgba(0, 180, 180, 0.1); color: var(--accent-dark); padding: 0.2rem 0.6rem; font-size: 0.72rem; border-radius: 99px; font-weight: 700;">
+                {{ subject.test_prep_badge|default:"تحضير اختبار" }}
+              </span>
+            {% else %}
+              <span class="savings-badge" style="background: rgba(16, 185, 129, 0.08); color: #059669; padding: 0.2rem 0.6rem; font-size: 0.72rem; border-radius: 99px; font-weight: 700;">
+                أكاديمي
+              </span>
+            {% endif %}
+          </div>
+
+          <!-- معلومات المادة -->
+          <h2 style="font-size: 1.2rem; font-weight: 800; margin-block-end: 0.5rem; color: var(--text);">
+            {{ subject.name_ar }}
+          </h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; margin-block-end: 1.5rem;">
+            {{ subject.description_ar|default:"احصل على تعليم مخصص فردي من الخبراء وفقاً لسرعة تعلمك واحتياجاتك الدراسية." }}
+          </p>
+        </div>
+
+        <!-- أزرار الإجراءات -->
+        <div style="margin-block-start: auto;">
+          {% if user.is_authenticated %}
+            <!-- إجراءات الطالب -->
+            {% if profile.is_student %}
+              {% if subject.id in enrolled_subject_ids %}
+                <button class="btn btn-outline" style="inline-size: 100%; justify-content: center; cursor: not-allowed; opacity: 0.8;" disabled>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="margin-inline-start: 0.35rem;"><polyline points="20 6 9 17 4 12"/></svg>
+                  مسجل في المادة
+                </button>
+              {% else %}
+                <form method="post" action="{% url 'enroll_in_course' %}">
+                  {% csrf_token %}
+                  <input type="hidden" name="subject_id" value="{{ subject.id }}">
+                  <button type="submit" class="btn btn-primary" style="inline-size: 100%; justify-content: center;">
+                    تسجيل في المادة
+                  </button>
+                </form>
+              {% endif %}
+
+            <!-- إجراءات ولي الأمر -->
+            {% elif profile.is_parent %}
+              {% if children %}
+                <form method="post" action="{% url 'enroll_in_course' %}" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                  {% csrf_token %}
+                  <input type="hidden" name="subject_id" value="{{ subject.id }}">
+                  <div style="display: flex; gap: 0.4rem; align-items: center;">
+                    <select name="child_id" class="form-control" style="font-size: 0.82rem; padding: 0.4rem; background: var(--bg); flex: 1; min-width: 0;" required>
+                      <option value="" disabled selected>اختر الابن...</option>
+                      {% for child in children %}
+                        <option value="{{ child.id }}">
+                          {{ child.profile.user.get_full_name|default:child.profile.user.username }}
+                        </option>
+                      {% endfor %}
+                    </select>
+                    <button type="submit" class="btn btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.82rem; white-space: nowrap;">
+                      تسجيل
+                    </button>
+                  </div>
+                </form>
+              {% else %}
+                <p style="font-size: 0.78rem; color: var(--text-muted); text-align: center; margin: 0;">
+                  لا يوجد أبناء مرتبطون بعد. <a href="{% url 'dashboard' %}" style="color: var(--accent); text-decoration: underline;">اربط حساب ابنك</a> أولاً.
+                </p>
+              {% endif %}
+
+            <!-- إجراءات المعلم -->
+            {% elif profile.is_teacher %}
+              {% if subject.id in teaching_subject_ids %}
+                <button class="btn btn-outline" style="inline-size: 100%; justify-content: center; cursor: not-allowed; opacity: 0.8;" disabled>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="margin-inline-start: 0.35rem;"><polyline points="20 6 9 17 4 12"/></svg>
+                  معتمد للتدريس
+                </button>
+              {% elif subject.id in pending_request_subject_ids %}
+                <button class="btn btn-outline" style="inline-size: 100%; justify-content: center; cursor: not-allowed; opacity: 0.8;" disabled>
+                  ⏳ الطلب قيد المراجعة
+                </button>
+              {% else %}
+                <button type="button" class="btn btn-outline" style="inline-size: 100%; justify-content: center;" onclick="document.getElementById('teach-form-{{ subject.id }}').style.display='block'; this.style.display='none';">
+                  طلب تدريس المادة
+                </button>
+                <div id="teach-form-{{ subject.id }}" style="display: none; margin-block-start: 0.75rem;">
+                  <form method="post" action="{% url 'request_to_teach' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="subject_id" value="{{ subject.id }}">
+                    <div style="display: flex; gap: 0.4rem; align-items: center;">
+                      <span style="font-size: 0.88rem; color: var(--text-muted); font-weight: 700;">$</span>
+                      <input type="number" name="proposed_rate" step="0.50" min="1" max="500" class="form-control" placeholder="الأجر المقترح/ساعة (USD)" required style="padding: 0.4rem; font-size: 0.82rem; flex: 1; background: var(--bg);">
+                      <button type="submit" class="btn btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.82rem;">إرسال</button>
+                    </div>
+                  </form>
+                </div>
+              {% endif %}
+            {% endif %}
+
+          {% else %}
+            <!-- إجراءات الزائر (غير مسجل الدخول) -->
+            <div style="display: flex; gap: 0.5rem; flex-direction: column;">
+              <a href="{% url 'register_student' %}" class="btn btn-primary" style="justify-content: center; inline-size: 100%;">
+                سجل الآن
+              </a>
+              <a href="{% url 'register_teacher' %}" class="btn btn-outline" style="justify-content: center; inline-size: 100%; font-size: 0.8rem; padding-block: 0.4rem;">
+                انضم كمعلم
+              </a>
+            </div>
+          {% endif %}
+        </div>
+      </article>
+      {% empty %}
+      <p style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding-block: 3rem;">
+        لا توجد مواد متاحة حالياً. يرجى العودة لاحقاً.
+      </p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

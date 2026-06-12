@@ -1429,3 +1429,17 @@ svg.value-check {
     background: var(--accent-light);
 }
 
+/* Schedule Responsive Grid Container */
+.schedule-container {
+    display: grid;
+    grid-template-columns: 1.2fr 1.0fr;
+    gap: 1.5rem;
+    margin-block-end: 1.5rem;
+}
+@media (max-width: 767px) {
+    .schedule-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+

@@ -158,3 +158,35 @@ class GoogleCredential(models.Model):
     def __str__(self):
         return f"Google Credential for {self.user.username}"
 
+
+class ParentChildRequest(models.Model):
+    STATUS_PENDING = 'pending'
+    STATUS_ACCEPTED = 'accepted'
+    STATUS_REJECTED = 'rejected'
+    STATUS_CHOICES = [
+        (STATUS_PENDING, _('Pending')),
+        (STATUS_ACCEPTED, _('Accepted')),
+        (STATUS_REJECTED, _('Rejected')),
+    ]
+
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_link_requests')
+    receiver = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='received_link_requests')
+    receiver_email = models.EmailField(blank=True, null=True, verbose_name=_('Receiver Email'))
+    token = models.CharField(max_length=64, unique=True, blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_PENDING, verbose_name=_('Status'))
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = _('Parent-Child Request')
+        verbose_name_plural = _('Parent-Child Requests')
+
+    def save(self, *args, **kwargs):
+        if not self.token:
+            import uuid
+            self.token = uuid.uuid4().hex
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"Request from {self.sender.username} to {self.receiver_email or self.receiver} ({self.status})"
+
+

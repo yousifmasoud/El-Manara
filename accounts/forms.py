@@ -18,10 +18,12 @@ class BaseRegistrationForm(forms.ModelForm):
     password1 = forms.CharField(
         label=_('Password'),
         widget=forms.PasswordInput(attrs={'placeholder': _('Password')}),
+        required=True,
     )
     password2 = forms.CharField(
         label=_('Confirm Password'),
         widget=forms.PasswordInput(attrs={'placeholder': _('Confirm Password')}),
+        required=True,
     )
 
     class Meta:
@@ -34,16 +36,40 @@ class BaseRegistrationForm(forms.ModelForm):
             'email': forms.EmailInput(attrs={'placeholder': _('Email Address')}),
         }
 
+    def __init__(self, *args, **kwargs):
+        is_google = kwargs.pop('is_google', False)
+        is_profile_completion = kwargs.pop('is_profile_completion', False)
+        self.is_google = is_google
+        self.is_profile_completion = is_profile_completion
+        super().__init__(*args, **kwargs)
+        if is_google or is_profile_completion:
+            if 'password1' in self.fields:
+                del self.fields['password1']
+            if 'password2' in self.fields:
+                del self.fields['password2']
+            if is_google:
+                self.fields['email'].disabled = True
+            if is_profile_completion:
+                self.fields['username'].disabled = True
+                self.fields['email'].disabled = True
+
     def clean_password2(self):
         p1 = self.cleaned_data.get('password1')
         p2 = self.cleaned_data.get('password2')
+        if (self.is_google or self.is_profile_completion) and not p1 and not p2:
+            return p2
         if p1 and p2 and p1 != p2:
             raise forms.ValidationError(_('Passwords do not match.'))
         return p2
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        user.set_password(self.cleaned_data['password1'])
+        p1 = self.cleaned_data.get('password1')
+        if p1:
+            user.set_password(p1)
+        elif not user.pk:
+            import secrets
+            user.set_password(secrets.token_hex(16))
         if commit:
             user.save()
         return user

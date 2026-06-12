@@ -169,11 +169,13 @@ class Session(models.Model):
     STATUS_SCHEDULED = 'scheduled'
     STATUS_COMPLETED = 'completed'
     STATUS_CANCELED = 'canceled'
+    STATUS_REQUESTED = 'requested'
 
     STATUS_CHOICES = [
         (STATUS_SCHEDULED, _('Scheduled')),
         (STATUS_COMPLETED, _('Completed')),
         (STATUS_CANCELED, _('Canceled')),
+        (STATUS_REQUESTED, _('Requested')),
     ]
 
     student = models.ForeignKey(
@@ -202,4 +204,65 @@ class Session(models.Model):
     def __str__(self):
         subject_name = self.subject.name_en if self.subject else _('No Subject')
         return f"{subject_name} with {self.teacher} on {self.scheduled_at}"
+
+
+class StudentEnrollment(models.Model):
+    student = models.ForeignKey(
+        'accounts.StudentProfile', on_delete=models.CASCADE, related_name='enrollments'
+    )
+    subject = models.ForeignKey(
+        Subject, on_delete=models.CASCADE, related_name='enrollments'
+    )
+    enrolled_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('student', 'subject')
+        verbose_name = _('Student Enrollment')
+        verbose_name_plural = _('Student Enrollments')
+
+    def __str__(self):
+        return f"{self.student} enrolled in {self.subject}"
+
+
+class TeacherSubjectRequest(models.Model):
+    STATUS_PENDING = 'pending'
+    STATUS_APPROVED = 'approved'
+    STATUS_REJECTED = 'rejected'
+    STATUS_CHOICES = [
+        (STATUS_PENDING, _('Pending')),
+        (STATUS_APPROVED, _('Approved')),
+        (STATUS_REJECTED, _('Rejected')),
+    ]
+
+    teacher = models.ForeignKey(
+        'accounts.TeacherProfile', on_delete=models.CASCADE, related_name='subject_requests'
+    )
+    subject = models.ForeignKey(
+        Subject, on_delete=models.CASCADE, related_name='teacher_requests'
+    )
+    proposed_rate = models.DecimalField(
+        max_digits=8, decimal_places=2, verbose_name=_('Proposed Rate (USD)')
+    )
+    status = models.CharField(
+        max_length=20, choices=STATUS_CHOICES, default=STATUS_PENDING, verbose_name=_('Status')
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('teacher', 'subject')
+        verbose_name = _('Teacher Subject Request')
+        verbose_name_plural = _('Teacher Subject Requests')
+
+    def __str__(self):
+        return f"{self.teacher} requests {self.subject} at ${self.proposed_rate}/hr"
+
+    def save(self, *args, **kwargs):
+        is_new = not self.pk
+        old_status = None
+        if not is_new:
+            old_status = TeacherSubjectRequest.objects.get(pk=self.pk).status
+        super().save(*args, **kwargs)
+        if self.status == self.STATUS_APPROVED and old_status != self.STATUS_APPROVED:
+            self.teacher.subjects.add(self.subject)
+
 

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
-from .models import Subject, HourlyPackage, Purchase, Session
+from .models import Subject, HourlyPackage, Purchase, Session, StudentEnrollment, TeacherSubjectRequest
 
 
 @admin.register(Subject)
@@ -40,4 +40,32 @@ class SessionAdmin(admin.ModelAdmin):
     list_display = ('subject', 'student', 'teacher', 'scheduled_at', 'duration_minutes', 'status')
     list_filter = ('status', 'scheduled_at')
     search_fields = ('student__profile__user__username', 'teacher__profile__user__username', 'subject__name_en')
+
+
+@admin.register(StudentEnrollment)
+class StudentEnrollmentAdmin(admin.ModelAdmin):
+    list_display = ('student', 'subject', 'enrolled_at')
+    list_filter = ('subject', 'enrolled_at')
+    search_fields = ('student__profile__user__username', 'subject__name_en')
+
+
+@admin.register(TeacherSubjectRequest)
+class TeacherSubjectRequestAdmin(admin.ModelAdmin):
+    list_display = ('teacher', 'subject', 'proposed_rate', 'status', 'created_at')
+    list_filter = ('status', 'subject', 'created_at')
+    search_fields = ('teacher__profile__user__username', 'subject__name_en')
+    actions = ['approve_requests', 'reject_requests']
+
+    @admin.action(description=_("Approve selected teacher requests"))
+    def approve_requests(self, request, queryset):
+        for req in queryset:
+            req.status = req.STATUS_APPROVED
+            req.save()
+        self.message_user(request, _("Selected requests approved and subjects linked."))
+
+    @admin.action(description=_("Reject selected teacher requests"))
+    def reject_requests(self, request, queryset):
+        queryset.update(status='rejected')
+        self.message_user(request, _("Selected requests rejected."))
+
 

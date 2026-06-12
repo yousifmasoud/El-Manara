@@ -37,10 +37,20 @@
                         >
                     </li>
                     <li>
+                        <a
+                            class="nav-link {% if request.resolver_match.url_name == 'courses_list' %}active{% endif %}"
+                            href="{% url 'courses_list' %}"
+                            >المساقات</a
+                        >
+                    </li>
+                    {% if not user.is_authenticated or not user.profile.is_teacher %}
+                    <li>
                         <a class="nav-link {% if request.resolver_match.url_name == 'packages' %}active{% endif %}" href="{% url 'packages' %}"
                             >الباقات</a
                         >
                     </li>
+                    {% endif %}
+                    {% if not user.is_authenticated %}
                     <li>
                         <a
                             class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}"
@@ -55,45 +65,6 @@
                             >اتصل بنا</a
                         >
                     </li>
-                    {% if user.is_authenticated %}
-                    <li>
-                        <a
-                            class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"
-                            href="{% url 'dashboard' %}"
-                            >لوحة التحكم</a
-                        >
-                    </li>
-                    {% if user.profile.is_student %}
-                    <li>
-                        <a
-                            class="btn btn-primary nav-cta"
-                            href="{% url 'dashboard' %}"
-                            >عرض المساقات</a
-                        >
-                    </li>
-                    {% elif user.profile.is_teacher %}
-                    <li>
-                        <a
-                            class="btn btn-primary nav-cta"
-                            href="{% url 'dashboard' %}"
-                            >عرض الجدول</a
-                        >
-                    </li>
-                    {% else %}
-                    <li>
-                        <a
-                            class="btn btn-primary nav-cta"
-                            href="{% url 'dashboard' %}"
-                            >لوحة التحكم</a
-                        >
-                    </li>
-                    {% endif %}
-                    <li>
-                        <a class="nav-link" href="{% url 'logout' %}"
-                            >تسجيل الخروج</a
-                        >
-                    </li>
-                    {% else %}
                     <li>
                         <a
                             class="nav-link {% if request.resolver_match.url_name == 'login' %}active{% endif %}"
@@ -106,6 +77,19 @@
                             class="btn btn-primary nav-cta"
                             href="{% url 'register_student' %}"
                             >ابدأ الآن</a
+                        >
+                    </li>
+                    {% else %}
+                    <li>
+                        <a
+                            class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"
+                            href="{% url 'dashboard' %}"
+                            >لوحة التحكم</a
+                        >
+                    </li>
+                    <li>
+                        <a class="nav-link" href="{% url 'logout' %}"
+                            >تسجيل الخروج</a
                         >
                     </li>
                     {% endif %}
@@ -286,7 +270,9 @@
                         <h4 class="footer-heading">روابط سريعة</h4>
                         <ul class="footer-links">
                             <li><a href="{% url 'home' %}">الرئيسية</a></li>
+                            {% if not user.is_authenticated or not user.profile.is_teacher %}
                             <li><a href="{% url 'packages' %}">الباقات</a></li>
+                            {% endif %}
                             <li><a href="{% url 'about' %}">من نحن</a></li>
                             <li><a href="{% url 'contact' %}">اتصل بنا</a></li>
                             <li>

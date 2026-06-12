@@ -5,7 +5,21 @@ from decimal import Decimal
 from .models import Session, Subject
 from accounts.models import StudentProfile, TeacherProfile
 
+class TeacherModelChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        name = obj.profile.user.get_full_name() or obj.profile.user.username
+        verified_str = f" ({_('Verified')})" if obj.is_verified else f" ({_('Pending')})"
+        rating_str = f" ⭐ {obj.rating}" if obj.rating else ""
+        return f"{name}{verified_str}{rating_str} — ${obj.hourly_rate}/hr"
+
+
 class SessionForm(forms.ModelForm):
+    teacher = TeacherModelChoiceField(
+        queryset=TeacherProfile.objects.all().select_related('profile__user'),
+        required=True,
+        label=_('Teacher')
+    )
+
     class Meta:
         model = Session
         fields = ('student', 'teacher', 'subject', 'scheduled_at', 'duration_minutes', 'notes')
@@ -37,13 +51,11 @@ class SessionForm(forms.ModelForm):
                     # Current user is the teacher, they schedule with a student
                     self.fields['teacher'].required = False
                     self.fields['teacher'].widget = forms.HiddenInput()
-                    self.fields['student'].queryset = StudentProfile.objects.all().select_related('profile__user')
-                    # If teacher has specified subjects, show those, otherwise show all active
-                    teacher_sub = profile.teacher_profile.subjects.all()
-                    if teacher_sub.exists():
-                        self.fields['subject'].queryset = teacher_sub.filter(is_active=True)
-                    else:
-                        self.fields['subject'].queryset = Subject.objects.filter(is_active=True)
+                    teacher_subs = profile.teacher_profile.subjects.filter(is_active=True)
+                    self.fields['subject'].queryset = teacher_subs
+                    self.fields['student'].queryset = StudentProfile.objects.filter(
+                        enrollments__subject__in=teacher_subs
+                    ).distinct().select_related('profile__user')
                 elif profile.is_student:
                     # Current user is the student, they schedule with a teacher
                     self.fields['student'].required = False
@@ -54,7 +66,14 @@ class SessionForm(forms.ModelForm):
                         self.fields['teacher'].queryset = verified_teachers
                     else:
                         self.fields['teacher'].queryset = TeacherProfile.objects.all().select_related('profile__user')
-                    self.fields['subject'].queryset = Subject.objects.filter(is_active=True)
+                    
+                    # Filter subjects by student's enrollments
+                    student_subs = profile.student_profile.enrollments.values_list('subject_id', flat=True)
+                    if student_subs.exists():
+                        self.fields['subject'].queryset = Subject.objects.filter(id__in=student_subs, is_active=True)
+                    else:
+                        self.fields['subject'].queryset = Subject.objects.filter(is_active=True)
+
 
     def clean_scheduled_at(self):
         scheduled_at = self.cleaned_data.get('scheduled_at')
@@ -66,18 +85,30 @@ class SessionForm(forms.ModelForm):
         cleaned_data = super().clean()
         duration_minutes = cleaned_data.get('duration_minutes')
         student = cleaned_data.get('student')
+        subject = cleaned_data.get('subject')
         
         # If student is not selected but the logged-in user is a student, assign the student profile
         if not student and self.user and hasattr(self.user, 'profile') and self.user.profile.is_student:
             student = self.user.profile.student_profile
             cleaned_data['student'] = student
         
+        # Validate that if the scheduling user is a teacher, the student is enrolled in the subject
+        # and the teacher is approved to teach the subject
+        if self.user and hasattr(self.user, 'profile') and self.user.profile.is_teacher:
+            teacher = self.user.profile.teacher_profile
+            if subject and not teacher.subjects.filter(pk=subject.pk).exists():
+                self.add_error('subject', _("You are not approved to teach this subject."))
+            if student and subject:
+                from .models import StudentEnrollment
+                if not StudentEnrollment.objects.filter(student=student, subject=subject).exists():
+                    self.add_error('subject', _("The selected student is not enrolled in this subject."))
+
         if duration_minutes is not None:
             if duration_minutes <= 0:
                 self.add_error('duration_minutes', _('Duration must be greater than zero.'))
             else:
                 duration_hours = Decimal(duration_minutes) / Decimal(60.0)
-                if student:
+                if student and self.user and hasattr(self.user, 'profile') and self.user.profile.is_student:
                     if student.hourly_balance < duration_hours:
                         raise forms.ValidationError(
                             _("The student does not have enough hours in their balance. Required: %(req)s hours, Available: %(avail)s hours.") % {

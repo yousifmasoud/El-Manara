@@ -13,6 +13,7 @@ from django.conf import settings
 from django.utils.crypto import get_random_string
 import requests
 from courses.models import HourlyPackage, Subject, Session
+from django.db.models import Q
 
 from .forms import (
     LoginForm,
@@ -20,7 +21,8 @@ from .forms import (
     StudentRegistrationForm,
     TeacherRegistrationForm,
 )
-from .models import ParentProfile, Referral, StudentProfile, TeacherProfile, UserProfile, GoogleCredential
+from .models import ParentProfile, Referral, StudentProfile, TeacherProfile, UserProfile, GoogleCredential, ParentChildRequest
+
 
 
 def _template(lang, name):
@@ -30,6 +32,8 @@ def _template(lang, name):
 
 
 def home(request):
+    if request.user.is_authenticated:
+        return redirect("dashboard")
     subjects = Subject.objects.filter(is_active=True, is_test_prep=False).order_by(
         "order"
     )
@@ -77,30 +81,91 @@ def logout_view(request):
 def register_student(request):
     lang = translation.get_language() or "en"
     referral_code = request.GET.get("ref", "")
-    form = StudentRegistrationForm(
-        request.POST or None, initial={"referral_code": referral_code}
-    )
-    if request.method == "POST" and form.is_valid():
-        user = form.save()
-        profile = UserProfile.objects.create(user=user, role=UserProfile.ROLE_STUDENT)
-        student = StudentProfile.objects.create(
-            profile=profile,
-            grade_level=form.cleaned_data.get("grade_level", ""),
+    
+    # Determine if this is a Google registration
+    google_data = request.session.get('google_register_data')
+    is_google = google_data is not None
+    
+    # Determine if this is profile completion for a logged-in user
+    is_profile_completion = False
+    if request.user.is_authenticated:
+        try:
+            if request.user.profile.student_profile:
+                return redirect('dashboard')
+        except Exception:
+            pass
+        is_profile_completion = True
+        
+    initial_data = {"referral_code": referral_code}
+    if is_google:
+        initial_data.update({
+            'email': google_data['email'],
+            'first_name': google_data['first_name'],
+            'last_name': google_data['last_name'],
+            'username': google_data['email'].split('@')[0],
+        })
+        
+    if request.method == "POST":
+        form = StudentRegistrationForm(
+            request.POST,
+            instance=request.user if is_profile_completion else None,
+            initial=initial_data,
+            is_google=is_google,
+            is_profile_completion=is_profile_completion
         )
-        # Handle referral linkage
-        ref = form.cleaned_data.get("referral_code", "").strip().upper()
-        if ref:
-            try:
-                referrer = StudentProfile.objects.get(referral_code=ref)
-                if referrer != student:
-                    Referral.objects.get_or_create(
-                        referrer=referrer, referred_user=student
-                    )
-            except StudentProfile.DoesNotExist:
-                pass
-        login(request, user)
-        messages.success(request, _("Welcome to Khotaa Academy!"))
-        return redirect("home")
+        if form.is_valid():
+            if is_profile_completion:
+                user = request.user
+                form.save()
+                profile, created = UserProfile.objects.get_or_create(user=user, defaults={'role': UserProfile.ROLE_STUDENT})
+                if not created and profile.role != UserProfile.ROLE_STUDENT:
+                    profile.role = UserProfile.ROLE_STUDENT
+                    profile.save(update_fields=['role'])
+            else:
+                user = form.save()
+                profile = UserProfile.objects.create(user=user, role=UserProfile.ROLE_STUDENT)
+                
+            student, created = StudentProfile.objects.get_or_create(
+                profile=profile,
+                defaults={'grade_level': form.cleaned_data.get("grade_level", "")}
+            )
+            
+            if is_google:
+                from django.utils.dateparse import parse_datetime
+                GoogleCredential.objects.update_or_create(
+                    user=user,
+                    defaults={
+                        'access_token': google_data['access_token'],
+                        'refresh_token': google_data['refresh_token'],
+                        'scopes': google_data['scopes'],
+                        'expires_at': parse_datetime(google_data['expires_at']) or timezone.now() + timezone.timedelta(hours=1)
+                    }
+                )
+                request.session.pop('google_register_data', None)
+                
+            if not request.user.is_authenticated:
+                login(request, user)
+                
+            # Handle referral linkage
+            ref = form.cleaned_data.get("referral_code", "").strip().upper()
+            if ref:
+                try:
+                    referrer = StudentProfile.objects.get(referral_code=ref)
+                    if referrer != student:
+                        Referral.objects.get_or_create(
+                            referrer=referrer, referred_user=student
+                        )
+                except StudentProfile.DoesNotExist:
+                    pass
+            messages.success(request, _("Welcome to Khotaa Academy!"))
+            return redirect("dashboard")
+    else:
+        form = StudentRegistrationForm(
+            instance=request.user if is_profile_completion else None,
+            initial=initial_data,
+            is_google=is_google,
+            is_profile_completion=is_profile_completion
+        )
     return render(
         request, _template(lang, "accounts/register_student.html"), {"form": form}
     )
@@ -108,20 +173,84 @@ def register_student(request):
 
 def register_teacher(request):
     lang = translation.get_language() or "en"
-    form = TeacherRegistrationForm(request.POST or None)
-    if request.method == "POST" and form.is_valid():
-        user = form.save()
-        profile = UserProfile.objects.create(user=user, role=UserProfile.ROLE_TEACHER)
-        TeacherProfile.objects.create(
-            profile=profile,
-            bio=form.cleaned_data.get("bio", ""),
-            hourly_rate=form.cleaned_data.get("hourly_rate") or 0,
+    
+    # Determine if this is a Google registration
+    google_data = request.session.get('google_register_data')
+    is_google = google_data is not None
+    
+    # Determine if this is profile completion for a logged-in user
+    is_profile_completion = False
+    if request.user.is_authenticated:
+        try:
+            if request.user.profile.teacher_profile:
+                return redirect('dashboard')
+        except Exception:
+            pass
+        is_profile_completion = True
+        
+    initial_data = {}
+    if is_google:
+        initial_data.update({
+            'email': google_data['email'],
+            'first_name': google_data['first_name'],
+            'last_name': google_data['last_name'],
+            'username': google_data['email'].split('@')[0],
+        })
+        
+    if request.method == "POST":
+        form = TeacherRegistrationForm(
+            request.POST,
+            instance=request.user if is_profile_completion else None,
+            initial=initial_data,
+            is_google=is_google,
+            is_profile_completion=is_profile_completion
         )
-        login(request, user)
-        messages.success(
-            request, _("Welcome, Teacher! Your profile is pending verification.")
+        if form.is_valid():
+            if is_profile_completion:
+                user = request.user
+                form.save()
+                profile, created = UserProfile.objects.get_or_create(user=user, defaults={'role': UserProfile.ROLE_TEACHER})
+                if not created and profile.role != UserProfile.ROLE_TEACHER:
+                    profile.role = UserProfile.ROLE_TEACHER
+                    profile.save(update_fields=['role'])
+            else:
+                user = form.save()
+                profile = UserProfile.objects.create(user=user, role=UserProfile.ROLE_TEACHER)
+                
+            teacher, created = TeacherProfile.objects.get_or_create(
+                profile=profile,
+                defaults={
+                    'bio': form.cleaned_data.get("bio", ""),
+                    'hourly_rate': form.cleaned_data.get("hourly_rate") or 0,
+                }
+            )
+            
+            if is_google:
+                from django.utils.dateparse import parse_datetime
+                GoogleCredential.objects.update_or_create(
+                    user=user,
+                    defaults={
+                        'access_token': google_data['access_token'],
+                        'refresh_token': google_data['refresh_token'],
+                        'scopes': google_data['scopes'],
+                        'expires_at': parse_datetime(google_data['expires_at']) or timezone.now() + timezone.timedelta(hours=1)
+                    }
+                )
+                request.session.pop('google_register_data', None)
+                
+            if not request.user.is_authenticated:
+                login(request, user)
+            messages.success(
+                request, _("Welcome, Teacher! Your profile is pending verification.")
+            )
+            return redirect("dashboard")
+    else:
+        form = TeacherRegistrationForm(
+            instance=request.user if is_profile_completion else None,
+            initial=initial_data,
+            is_google=is_google,
+            is_profile_completion=is_profile_completion
         )
-        return redirect("home")
     return render(
         request, _template(lang, "accounts/register_teacher.html"), {"form": form}
     )
@@ -129,16 +258,78 @@ def register_teacher(request):
 
 def register_parent(request):
     lang = translation.get_language() or "en"
-    form = ParentRegistrationForm(request.POST or None)
-    if request.method == "POST" and form.is_valid():
-        user = form.save()
-        profile = UserProfile.objects.create(user=user, role=UserProfile.ROLE_PARENT)
-        ParentProfile.objects.create(profile=profile)
-        login(request, user)
-        messages.success(
-            request, _("Welcome! You can now manage your children's accounts.")
+    
+    # Determine if this is a Google registration
+    google_data = request.session.get('google_register_data')
+    is_google = google_data is not None
+    
+    # Determine if this is profile completion for a logged-in user
+    is_profile_completion = False
+    if request.user.is_authenticated:
+        try:
+            if request.user.profile.parent_profile:
+                return redirect('dashboard')
+        except Exception:
+            pass
+        is_profile_completion = True
+        
+    initial_data = {}
+    if is_google:
+        initial_data.update({
+            'email': google_data['email'],
+            'first_name': google_data['first_name'],
+            'last_name': google_data['last_name'],
+            'username': google_data['email'].split('@')[0],
+        })
+        
+    if request.method == "POST":
+        form = ParentRegistrationForm(
+            request.POST,
+            instance=request.user if is_profile_completion else None,
+            initial=initial_data,
+            is_google=is_google,
+            is_profile_completion=is_profile_completion
         )
-        return redirect("dashboard")
+        if form.is_valid():
+            if is_profile_completion:
+                user = request.user
+                form.save()
+                profile, created = UserProfile.objects.get_or_create(user=user, defaults={'role': UserProfile.ROLE_PARENT})
+                if not created and profile.role != UserProfile.ROLE_PARENT:
+                    profile.role = UserProfile.ROLE_PARENT
+                    profile.save(update_fields=['role'])
+            else:
+                user = form.save()
+                profile = UserProfile.objects.create(user=user, role=UserProfile.ROLE_PARENT)
+                
+            parent, created = ParentProfile.objects.get_or_create(profile=profile)
+            
+            if is_google:
+                from django.utils.dateparse import parse_datetime
+                GoogleCredential.objects.update_or_create(
+                    user=user,
+                    defaults={
+                        'access_token': google_data['access_token'],
+                        'refresh_token': google_data['refresh_token'],
+                        'scopes': google_data['scopes'],
+                        'expires_at': parse_datetime(google_data['expires_at']) or timezone.now() + timezone.timedelta(hours=1)
+                    }
+                )
+                request.session.pop('google_register_data', None)
+                
+            if not request.user.is_authenticated:
+                login(request, user)
+            messages.success(
+                request, _("Welcome! You can now manage your children's accounts.")
+            )
+            return redirect("dashboard")
+    else:
+        form = ParentRegistrationForm(
+            instance=request.user if is_profile_completion else None,
+            initial=initial_data,
+            is_google=is_google,
+            is_profile_completion=is_profile_completion
+        )
     return render(
         request, _template(lang, "accounts/register_parent.html"), {"form": form}
     )
@@ -147,7 +338,34 @@ def register_parent(request):
 @login_required
 def dashboard(request):
     lang = translation.get_language() or "en"
-    profile = request.user.profile
+    
+    # 1. Check if user has UserProfile
+    try:
+        profile = request.user.profile
+    except UserProfile.DoesNotExist:
+        messages.warning(request, _("Please select a role to complete setting up your profile."))
+        return redirect('register_student')
+        
+    # 2. Check if the subprofile exists. If not, redirect to complete it.
+    if profile.is_student:
+        try:
+            student = profile.student_profile
+        except StudentProfile.DoesNotExist:
+            messages.warning(request, _("Your Student profile is incomplete. Please complete it to continue."))
+            return redirect('register_student')
+    elif profile.is_teacher:
+        try:
+            teacher = profile.teacher_profile
+        except TeacherProfile.DoesNotExist:
+            messages.warning(request, _("Your Teacher profile is incomplete. Please complete it to continue."))
+            return redirect('register_teacher')
+    elif profile.is_parent:
+        try:
+            parent = profile.parent_profile
+        except ParentProfile.DoesNotExist:
+            messages.warning(request, _("Your Parent profile is incomplete. Please complete it to continue."))
+            return redirect('register_parent')
+
     context = {"profile": profile}
     if profile.is_student:
         student = profile.student_profile
@@ -155,25 +373,53 @@ def dashboard(request):
             "referred_user__profile__user"
         )
         sessions = student.sessions.all().select_related("teacher__profile__user", "subject")
+        enrolled_subjects = Subject.objects.filter(enrollments__student=student, is_active=True)
+        pending_session_requests = student.sessions.filter(status=Session.STATUS_REQUESTED).select_related('teacher__profile__user', 'subject')
         context.update(
             {
                 "student": student,
                 "referrals": referrals,
                 "purchases": student.purchases.all()[:5],
                 "sessions": sessions,
+                "enrolled_subjects": enrolled_subjects,
+                "pending_session_requests": pending_session_requests,
             }
         )
     elif profile.is_teacher:
         teacher = profile.teacher_profile
         sessions = teacher.sessions.all().select_related("student__profile__user", "subject")
+        teaching_subjects = teacher.subjects.filter(is_active=True)
         context.update({
             "teacher": teacher,
             "sessions": sessions,
+            "teaching_subjects": teaching_subjects,
         })
     elif profile.is_parent:
         parent = profile.parent_profile
-        context["parent"] = parent
-        context["children"] = parent.children.select_related("profile__user").all()
+        children = parent.children.select_related("profile__user").all()
+        pending_session_requests = Session.objects.filter(student__in=children, status=Session.STATUS_REQUESTED).select_related('student__profile__user', 'teacher__profile__user', 'subject')
+        context.update({
+            "parent": parent,
+            "children": children,
+            "pending_session_requests": pending_session_requests,
+        })
+
+    # Get incoming/outgoing link requests
+    incoming_requests = ParentChildRequest.objects.filter(
+        Q(receiver=request.user) | Q(receiver_email=request.user.email),
+        status=ParentChildRequest.STATUS_PENDING
+    ).select_related('sender__profile__user')
+
+    outgoing_requests = ParentChildRequest.objects.filter(
+        sender=request.user,
+        status=ParentChildRequest.STATUS_PENDING
+    ).select_related('receiver__profile__user')
+
+    context.update({
+        "incoming_requests": incoming_requests,
+        "outgoing_requests": outgoing_requests,
+    })
+
     return render(request, _template(lang, "accounts/dashboard.html"), context)
 
 
@@ -184,10 +430,31 @@ def about_view(request):
 
 def contact_view(request):
     lang = translation.get_language() or "en"
+    if request.method == "POST":
+        name = request.POST.get("name")
+        email = request.POST.get("email")
+        subject = request.POST.get("subject")
+        message = request.POST.get("message")
+        
+        # Simulate storing/emailing the message
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.info(f"Contact submission from {name} <{email}>: [{subject}] {message}")
+        
+        messages.success(request, _("Thank you for contacting us! Your message has been sent successfully. We will get back to you soon."))
+        return redirect("contact")
+        
     return render(request, _template(lang, "contact.html"), {"lang": lang})
 
 
 def google_login(request):
+    if request.user.is_authenticated:
+        try:
+            if request.user.profile.is_student:
+                messages.error(request, _("Students are not allowed to link Google accounts."))
+                return redirect('dashboard')
+        except Exception:
+            pass
     role = request.GET.get('role', 'student')
     request.session['google_oauth_role'] = role
     client_id = getattr(settings, 'GOOGLE_CLIENT_ID', '')
@@ -236,26 +503,23 @@ def google_callback(request):
         email = f'{role}@google.com'
         try:
             user = User.objects.get(email=email)
-            created = False
         except User.DoesNotExist:
-            user, created = User.objects.get_or_create(
-                username=username,
-                defaults={
-                    'email': email,
-                    'first_name': f'Google {role.capitalize()}',
-                    'last_name': '(Mock)',
-                }
-            )
-        if created:
-            user.set_password(get_random_string(32))
-            user.save()
-            profile = UserProfile.objects.create(user=user, role=role)
-            if role == UserProfile.ROLE_STUDENT:
-                StudentProfile.objects.create(profile=profile)
+            request.session['google_register_data'] = {
+                'email': email,
+                'first_name': f"Google_{role}",
+                'last_name': "User",
+                'access_token': 'mock_access_token',
+                'refresh_token': 'mock_refresh_token',
+                'scopes': 'openid email profile https://www.googleapis.com/auth/calendar',
+                'expires_at': (timezone.now() + timezone.timedelta(hours=1)).isoformat(),
+            }
+            messages.info(request, _("Google login successful! Please complete your profile to finish creating your account."))
+            if role == UserProfile.ROLE_PARENT:
+                return redirect('register_parent')
             elif role == UserProfile.ROLE_TEACHER:
-                TeacherProfile.objects.create(profile=profile)
-            elif role == UserProfile.ROLE_PARENT:
-                ParentProfile.objects.create(profile=profile)
+                return redirect('register_teacher')
+            else:
+                return redirect('register_student')
         GoogleCredential.objects.update_or_create(
             user=user,
             defaults={
@@ -310,32 +574,24 @@ def google_callback(request):
         return redirect('dashboard')
     try:
         user = User.objects.get(email=email)
-        created = False
     except User.DoesNotExist:
-        username = email.split('@')[0]
-        base_username = username
-        counter = 1
-        while User.objects.filter(username=username).exists():
-            username = f"{base_username}{counter}"
-            counter += 1
-        user = User.objects.create(
-            username=username,
-            email=email,
-            first_name=first_name,
-            last_name=last_name
-        )
-        created = True
-
-    if created:
-        user.set_password(get_random_string(32))
-        user.save()
-        profile = UserProfile.objects.create(user=user, role=role)
-        if role == UserProfile.ROLE_STUDENT:
-            StudentProfile.objects.create(profile=profile)
+        request.session['google_register_data'] = {
+            'email': email,
+            'first_name': first_name,
+            'last_name': last_name,
+            'access_token': access_token,
+            'refresh_token': refresh_token or '',
+            'scopes': token_data.get('scope', ''),
+            'expires_at': expires_at.isoformat() if hasattr(expires_at, 'isoformat') else str(expires_at),
+        }
+        messages.info(request, _("Google login successful! Please complete your profile to finish creating your account."))
+        if role == UserProfile.ROLE_PARENT:
+            return redirect('register_parent')
         elif role == UserProfile.ROLE_TEACHER:
-            TeacherProfile.objects.create(profile=profile)
-        elif role == UserProfile.ROLE_PARENT:
-            ParentProfile.objects.create(profile=profile)
+            return redirect('register_teacher')
+        else:
+            return redirect('register_student')
+
     GoogleCredential.objects.update_or_create(
         user=user,
         defaults={
@@ -356,11 +612,9 @@ def create_instant_meeting(request, session_id):
     session = get_object_or_404(Session, pk=session_id)
     profile = request.user.profile
     
-    # Check authorization (only student or teacher of the session)
+    # Check authorization (only teacher of the session)
     is_authorized = False
     if profile.is_teacher and session.teacher == profile.teacher_profile:
-        is_authorized = True
-    elif profile.is_student and session.student == profile.student_profile:
         is_authorized = True
         
     if not is_authorized:
@@ -490,3 +744,252 @@ def create_instant_meeting(request, session_id):
         messages.warning(request, _(f"Google Calendar API failed: {str(e)}. Generated a placeholder mock Google Meet link. Please verify your Google API project setup, OAuth scopes, and permissions."))
         
     return redirect('dashboard')
+
+
+@login_required
+@require_POST
+def send_link_request(request):
+    profile = request.user.profile
+    identifier = request.POST.get("identifier", "").strip()
+    if not identifier:
+        messages.error(request, _("Please enter a valid username or email address."))
+        return redirect("dashboard")
+
+    # Determine role requirements
+    if profile.is_student:
+        sender_role = "student"
+        expected_target_role = UserProfile.ROLE_PARENT
+        target_role_display = _("Parent")
+    elif profile.is_parent:
+        sender_role = "parent"
+        expected_target_role = UserProfile.ROLE_STUDENT
+        target_role_display = _("Student")
+    else:
+        messages.error(request, _("Only students or parents can send link requests."))
+        return redirect("dashboard")
+
+    # Search for target user
+    target_user = User.objects.filter(Q(username=identifier) | Q(email=identifier)).first()
+    
+    if target_user:
+        if target_user == request.user:
+            messages.error(request, _("You cannot link your own account to itself."))
+            return redirect("dashboard")
+            
+        if not hasattr(target_user, 'profile') or target_user.profile.role != expected_target_role:
+            messages.error(request, _(f"The found user is not registered as a {target_role_display}."))
+            return redirect("dashboard")
+            
+        # Check if already linked
+        if profile.is_student:
+            student_profile = profile.student_profile
+            parent_profile = target_user.profile.parent_profile
+        else:
+            parent_profile = profile.parent_profile
+            student_profile = target_user.profile.student_profile
+            
+        if parent_profile.children.filter(pk=student_profile.pk).exists():
+            messages.warning(request, _("This account is already linked to yours."))
+            return redirect("dashboard")
+
+        # Check if request already exists
+        existing = ParentChildRequest.objects.filter(
+            sender=request.user, receiver=target_user, status=ParentChildRequest.STATUS_PENDING
+        ).exists()
+        if existing:
+            messages.warning(request, _("A pending request has already been sent to this user."))
+            return redirect("dashboard")
+
+        ParentChildRequest.objects.create(
+            sender=request.user,
+            receiver=target_user,
+            receiver_email=target_user.email,
+            status=ParentChildRequest.STATUS_PENDING
+        )
+        messages.success(request, _(f"Linking request sent to {target_user.get_full_name() or target_user.username} successfully."))
+    else:
+        # User not registered yet, we create a pending invitation via email
+        if "@" not in identifier:
+            messages.error(request, _("User not found. To invite them, please provide a valid email address."))
+            return redirect("dashboard")
+
+        # Check if a pending invite already exists for this email
+        existing = ParentChildRequest.objects.filter(
+            sender=request.user, receiver_email=identifier, status=ParentChildRequest.STATUS_PENDING
+        ).exists()
+        if existing:
+            messages.warning(request, _("A pending request has already been sent to this email."))
+            return redirect("dashboard")
+
+        req = ParentChildRequest.objects.create(
+            sender=request.user,
+            receiver_email=identifier,
+            status=ParentChildRequest.STATUS_PENDING
+        )
+        
+        # Build invitation link
+        invite_link = request.build_absolute_uri(reverse('accept_invite_link') + f"?token={req.token}")
+        messages.success(
+            request,
+            _(f"Invitation created for {identifier}! Since they are not registered yet, please share this invitation link with them to connect once they register: {invite_link}")
+        )
+        # Store in session for quick access
+        request.session['last_invite_link'] = invite_link
+        request.session['last_invite_email'] = identifier
+
+    return redirect("dashboard")
+
+
+@login_required
+@require_POST
+def accept_link_request(request, request_id):
+    req = get_object_or_404(ParentChildRequest, pk=request_id)
+    
+    # Verify the logged in user is the receiver
+    if req.receiver != request.user and req.receiver_email != request.user.email:
+        messages.error(request, _("You are not authorized to accept this request."))
+        return redirect("dashboard")
+        
+    if req.status != ParentChildRequest.STATUS_PENDING:
+        messages.error(request, _("This request has already been processed."))
+        return redirect("dashboard")
+        
+    # Process linking
+    sender = req.sender
+    receiver = request.user
+    
+    if sender.profile.is_parent and receiver.profile.is_student:
+        parent_profile = sender.profile.parent_profile
+        student_profile = receiver.profile.student_profile
+    elif sender.profile.is_student and receiver.profile.is_parent:
+        parent_profile = receiver.profile.parent_profile
+        student_profile = sender.profile.student_profile
+    else:
+        messages.error(request, _("Account roles are incompatible for linking."))
+        return redirect("dashboard")
+        
+    parent_profile.children.add(student_profile)
+    req.status = ParentChildRequest.STATUS_ACCEPTED
+    req.receiver = receiver
+    req.receiver_email = receiver.email
+    req.save()
+    
+    messages.success(request, _(f"Successfully linked accounts with {sender.get_full_name() or sender.username}!"))
+    return redirect("dashboard")
+
+
+@login_required
+@require_POST
+def reject_link_request(request, request_id):
+    req = get_object_or_404(ParentChildRequest, pk=request_id)
+    
+    # Verify the logged in user is the receiver
+    if req.receiver != request.user and req.receiver_email != request.user.email:
+        messages.error(request, _("You are not authorized to reject this request."))
+        return redirect("dashboard")
+        
+    if req.status != ParentChildRequest.STATUS_PENDING:
+        messages.error(request, _("This request has already been processed."))
+        return redirect("dashboard")
+        
+    req.status = ParentChildRequest.STATUS_REJECTED
+    req.save()
+    messages.info(request, _("Request declined."))
+    return redirect("dashboard")
+
+
+def accept_invite_link(request):
+    token = request.GET.get("token") or request.session.get("pending_invite_token")
+    if not token:
+        messages.error(request, _("No invitation token provided."))
+        return redirect("home")
+        
+    req = get_object_or_404(ParentChildRequest, token=token)
+    
+    if req.status != ParentChildRequest.STATUS_PENDING:
+        messages.error(request, _("This invitation link has already been used or expired."))
+        return redirect("home")
+        
+    if not request.user.is_authenticated:
+        # Save token in session so we can resume after login/registration
+        request.session["pending_invite_token"] = token
+        messages.info(request, _("Please log in or register an account to accept this invitation."))
+        return redirect(reverse('login') + f"?next={request.path}")
+        
+    # User is logged in
+    sender = req.sender
+    if sender == request.user:
+        messages.error(request, _("You cannot accept your own invitation link."))
+        if "pending_invite_token" in request.session:
+            del request.session["pending_invite_token"]
+        return redirect("dashboard")
+        
+    # Check role compatibility
+    sender_profile = sender.profile
+    receiver_profile = request.user.profile
+    
+    is_compatible = False
+    if sender_profile.is_parent and receiver_profile.is_student:
+        is_compatible = True
+    elif sender_profile.is_student and receiver_profile.is_parent:
+        is_compatible = True
+        
+    if not is_compatible:
+        role_sender_display = sender_profile.get_role_display()
+        role_receiver_display = receiver_profile.get_role_display()
+        messages.error(
+            request, 
+            _(f"Role mismatch. The invitation was sent by a {role_sender_display}, but you are logged in as a {role_receiver_display}. You cannot link accounts of the same role.")
+        )
+        if "pending_invite_token" in request.session:
+            del request.session["pending_invite_token"]
+        return redirect("dashboard")
+        
+    # If request is POST, accept it
+    if request.method == "POST":
+        if sender_profile.is_parent:
+            parent_profile = sender_profile.parent_profile
+            student_profile = receiver_profile.student_profile
+        else:
+            parent_profile = receiver_profile.parent_profile
+            student_profile = sender_profile.student_profile
+            
+        parent_profile.children.add(student_profile)
+        req.status = ParentChildRequest.STATUS_ACCEPTED
+        req.receiver = request.user
+        req.receiver_email = request.user.email
+        req.save()
+        
+        if "pending_invite_token" in request.session:
+            del request.session["pending_invite_token"]
+            
+        messages.success(request, _(f"Successfully linked accounts with {sender.get_full_name() or sender.username}!"))
+        return redirect("dashboard")
+        
+    # Render confirmation landing page
+    lang = translation.get_language() or "en"
+    return render(
+        request, 
+        _template(lang, "accounts/confirm_link.html"), 
+        {"req": req, "sender": sender, "lang": lang}
+    )
+
+
+@login_required
+@require_POST
+def generate_invite_link(request):
+    profile = request.user.profile
+    if not (profile.is_student or profile.is_parent):
+        messages.error(request, _("Only students or parents can generate invitation links."))
+        return redirect("dashboard")
+        
+    req = ParentChildRequest.objects.create(
+        sender=request.user,
+        status=ParentChildRequest.STATUS_PENDING
+    )
+    
+    invite_link = request.build_absolute_uri(reverse('accept_invite_link') + f"?token={req.token}")
+    messages.success(request, _("Invitation link generated successfully! Share it to link accounts."))
+    request.session['last_invite_link'] = invite_link
+    return redirect("dashboard")
+

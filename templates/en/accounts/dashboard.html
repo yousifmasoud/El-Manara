@@ -17,6 +17,15 @@
         <h3 style="font-weight:700;margin-block-end:1rem;">Your Account</h3>
         <p style="font-size:.88rem;color:var(--text-muted);">{{ user.email }}</p>
         <p style="font-size:.82rem;color:var(--text-muted);margin-block-start:.25rem;">Role: {{ profile.get_role_display }}</p>
+        
+        <p style="font-size:.82rem;font-weight:700;margin-block-start:0.5rem;color:var(--text);margin-block-end:0.25rem;">Enrolled Subjects:</p>
+        <ul style="padding-inline-start:1.15rem;margin:0;font-size:0.78rem;color:var(--text-muted);list-style-type:disc;">
+          {% for sub in enrolled_subjects %}
+            <li>{{ sub.name_en }}</li>
+          {% empty %}
+            <li style="list-style-type:none;padding-inline-start:0;margin-inline-start:-1.15rem;">Not enrolled in any subjects yet.</li>
+          {% endfor %}
+        </ul>
         <hr style="border-color:var(--border);margin-block:1rem;" />
         <p style="font-size:.85rem;font-weight:700;">Referral Code</p>
         <div style="display:flex;align-items:center;gap:.5rem;margin-block-start:.5rem;">
@@ -26,14 +35,24 @@
         <p style="font-size:.78rem;color:var(--text-muted);margin-block-start:.5rem;">Earn 2 free hours per successful referral (max 4/month).</p>
         
         <hr style="border-color:var(--border);margin-block:1rem;" />
-        <p style="font-size:.85rem;font-weight:700;">Google Integration</p>
-        {% if user.google_credential %}
-          <p style="font-size:.8rem;color:#10b981;font-weight:600;display:flex;align-items:center;gap:0.25rem;margin-block-start:0.5rem;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-            Google Linked
-          </p>
-        {% else %}
-          <a href="{% url 'google_login' %}" class="btn btn-google" style="padding:0.4rem 0.75rem;font-size:0.8rem;margin-block-start:0.5rem;inline-size:100%;justify-content:center;">Link Google Account</a>
+        <p style="font-size:.85rem;font-weight:700;margin-block-end:0.5rem;">Link a Parent</p>
+        <form method="post" action="{% url 'send_link_request' %}" style="display:flex;flex-direction:column;gap:0.4rem;">
+          {% csrf_token %}
+          <input type="text" name="identifier" class="form-control" style="font-size:0.8rem;padding:0.4rem 0.6rem;background:var(--bg);" placeholder="Parent's email or username" required>
+          <button type="submit" class="btn btn-primary" style="padding:0.4rem 0.6rem;font-size:0.8rem;justify-content:center;inline-size:100%;border-radius:var(--radius-sm);">Link Account</button>
+        </form>
+        <div style="margin-block-start:0.5rem; text-align:center; color:var(--text-muted); font-size:0.75rem;">— or —</div>
+        <form method="post" action="{% url 'generate_invite_link' %}" style="margin-block-start:0.5rem;">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-outline" style="padding:0.4rem 0.6rem;font-size:0.8rem;justify-content:center;inline-size:100%;border-radius:var(--radius-sm);">Link a Parent (Generate Link)</button>
+        </form>
+        
+        {% if request.session.last_invite_link %}
+        <div style="margin-block-start:0.75rem;padding:0.5rem;background:var(--surface);border:1px dashed var(--accent);border-radius:var(--radius-sm);font-size:0.75rem;">
+          <p style="font-weight:700;color:var(--accent);">Last Shareable Link:</p>
+          <p style="word-break:break-all;color:var(--text-muted);margin-block-start:0.15rem;">{{ request.session.last_invite_link }}</p>
+          <button type="button" class="btn btn-outline" style="padding:0.2rem 0.4rem;font-size:0.7rem;inline-size:100%;justify-content:center;margin-block-start:0.25rem;" onclick="navigator.clipboard.writeText('{{ request.session.last_invite_link }}').then(() => alert('Copied invitation link!'));">Copy</button>
+        </div>
         {% endif %}
       </aside>
 
@@ -68,6 +87,74 @@
           <a href="{% url 'packages' %}" class="btn btn-primary" id="dash-buy-hours">Buy More Hours</a>
         </div>
 
+        <!-- ══ LESSON REQUESTS SECTION ═════════════════════════ -->
+        {% if pending_session_requests %}
+        <div style="background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-block-end:1.5rem;">
+          <h3 style="font-weight:700;margin-block-end:1rem;font-size:1.1rem;">Incoming Lesson Requests</h3>
+          <ul style="padding:0;margin:0;display:flex;flex-direction:column;gap:0.75rem;list-style:none;">
+            {% for s in pending_session_requests %}
+              <li style="display:flex;justify-content:space-between;align-items:center;padding:0.75rem 1rem;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);flex-wrap:wrap;gap:0.5rem;">
+                <div>
+                  Teacher <strong>{{ s.teacher.profile.user.get_full_name|default:s.teacher.profile.user.username }}</strong> requested a lesson in <strong>{{ s.subject.name_en }}</strong> on {{ s.scheduled_at|date:"d M Y, H:i" }} ({{ s.duration_minutes }} mins).
+                </div>
+                <div style="display:flex;gap:0.5rem;">
+                  <form method="post" action="{% url 'accept_session' session_id=s.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary" style="padding:0.35rem 0.75rem;font-size:0.82rem;border-radius:var(--radius-sm);cursor:pointer;">Accept</button>
+                  </form>
+                  <form method="post" action="{% url 'reject_session' session_id=s.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline" style="padding:0.35rem 0.75rem;font-size:0.82rem;border-radius:var(--radius-sm);border-color:#ef4444;color:#ef4444;cursor:pointer;">Decline</button>
+                  </form>
+                </div>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+
+        <!-- ══ CONNECTION REQUESTS SECTION ══════════════════════ -->
+        {% if incoming_requests %}
+        <div style="background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-block-end:1.5rem;">
+          <h3 style="font-weight:700;margin-block-end:1rem;font-size:1.1rem;">Incoming Connection Requests</h3>
+          <ul style="padding:0;margin:0;display:flex;flex-direction:column;gap:0.75rem;list-style:none;">
+            {% for r in incoming_requests %}
+              <li style="display:flex;justify-content:space-between;align-items:center;padding:0.75rem 1rem;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);flex-wrap:wrap;gap:0.5rem;">
+                <div>
+                  <strong>{{ r.sender.get_full_name|default:r.sender.username }}</strong> ({{ r.sender.profile.get_role_display }}) wants to link accounts.
+                </div>
+                <div style="display:flex;gap:0.5rem;">
+                  <form method="post" action="{% url 'accept_link_request' request_id=r.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary" style="padding:0.35rem 0.75rem;font-size:0.82rem;border-radius:var(--radius-sm);cursor:pointer;">Accept</button>
+                  </form>
+                  <form method="post" action="{% url 'reject_link_request' request_id=r.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline" style="padding:0.35rem 0.75rem;font-size:0.82rem;border-radius:var(--radius-sm);border-color:#ef4444;color:#ef4444;cursor:pointer;">Decline</button>
+                  </form>
+                </div>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+
+        {% if outgoing_requests %}
+        <div style="background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-block-end:1.5rem;">
+          <h3 style="font-weight:700;margin-block-end:0.5rem;font-size:1rem;">Pending Link Requests</h3>
+          <ul style="padding:0;margin:0;display:flex;flex-direction:column;gap:0.5rem;list-style:none;">
+            {% for r in outgoing_requests %}
+              <li style="display:flex;justify-content:space-between;align-items:center;font-size:0.85rem;color:var(--text-muted);flex-wrap:wrap;gap:0.5rem;">
+                <span>Sent to: <strong>{% if r.receiver %}{{ r.receiver.get_full_name|default:r.receiver.username }}{% else %}{{ r.receiver_email }}{% endif %}</strong> (Awaiting confirmation)</span>
+                {% if not r.receiver %}
+                  <button type="button" class="btn btn-outline" style="padding:0.2rem 0.5rem;font-size:0.75rem;" onclick="navigator.clipboard.writeText('{{ request.scheme }}://{{ request.get_host }}{% url 'accept_invite_link' %}?token={{ r.token }}').then(() => alert('Copied invite link!'));">Copy Invite Link</button>
+                {% endif %}
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+
         <!-- ══ CALENDAR & MEETINGS SECTION ══════════════════════ -->
         <div style="display:flex;justify-content:space-between;align-items:center;margin-block-end:1rem;flex-wrap:wrap;gap:0.5rem;">
           <h3 style="font-weight:700;margin:0;">Your Lesson Schedule</h3>
@@ -77,7 +164,7 @@
             <a href="{% url 'packages' %}" class="btn btn-outline" style="padding:0.5rem 1.25rem;font-size:0.88rem;border-radius:var(--radius-sm);">Buy Hours to Schedule</a>
           {% endif %}
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1.2fr;gap:1.5rem;align-items:start;margin-block-end:2rem;" class="schedule-container">
+        <div class="schedule-container">
           <!-- Calendar Card -->
           <div class="calendar-card" style="margin-block-end:0;">
             <div class="calendar-header">
@@ -166,6 +253,15 @@
       <aside class="dash-sidebar">
         <h3 style="font-weight:700;margin-block-end:1rem;">Teacher Profile</h3>
         <p style="font-size:.88rem;color:var(--text-muted);">{{ user.email }}</p>
+        
+        <p style="font-size:.82rem;font-weight:700;margin-block-start:0.5rem;color:var(--text);margin-block-end:0.25rem;">Approved Subjects:</p>
+        <ul style="padding-inline-start:1.15rem;margin:0;font-size:0.78rem;color:var(--text-muted);list-style-type:disc;">
+          {% for sub in teaching_subjects %}
+            <li>{{ sub.name_en }}</li>
+          {% empty %}
+            <li style="list-style-type:none;padding-inline-start:0;margin-inline-start:-1.15rem;">No approved subjects yet.</li>
+          {% endfor %}
+        </ul>
         <hr style="border-color:var(--border);margin-block:1rem;" />
         <p><strong>Rate:</strong> ${{ teacher.hourly_rate }}/hr</p>
         <p style="margin-block-start:.5rem;"><strong>Status:</strong>
@@ -180,7 +276,10 @@
             Google Linked
           </p>
         {% else %}
-          <a href="{% url 'google_login' %}" class="btn btn-google" style="padding:0.4rem 0.75rem;font-size:0.8rem;margin-block-start:0.5rem;inline-size:100%;justify-content:center;">Link Google Account</a>
+          <a href="{% url 'google_login' %}" class="btn btn-google" style="padding:0.4rem 0.75rem;font-size:0.8rem;margin-block-start:0.5rem;inline-size:100%;justify-content:center;gap:0.35rem;">
+            <svg width="14" height="14" viewBox="0 0 24 24" style="flex-shrink:0;"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/></svg>
+            Link Google Account
+          </a>
         {% endif %}
       </aside>
       <div class="dash-main">
@@ -195,7 +294,7 @@
           <h3 style="font-weight:700;margin:0;">Your Tutoring Schedule</h3>
           <a href="{% url 'create_session' %}" class="btn btn-primary" style="padding:0.5rem 1.25rem;font-size:0.88rem;border-radius:var(--radius-sm);">+ Schedule Session</a>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1.2fr;gap:1.5rem;align-items:start;" class="schedule-container">
+        <div class="schedule-container">
           <!-- Calendar Card -->
           <div class="calendar-card" style="margin-block-end:0;">
             <div class="calendar-header">
@@ -232,6 +331,27 @@
         <p style="font-size:.85rem;color:var(--text-muted);">
           {{ children|length }} child{% if children|length != 1 %}ren{% endif %} linked
         </p>
+        
+        <hr style="border-color:var(--border);margin-block:1rem;" />
+        <p style="font-size:.85rem;font-weight:700;margin-block-end:0.5rem;">Link a Child</p>
+        <form method="post" action="{% url 'send_link_request' %}" style="display:flex;flex-direction:column;gap:0.4rem;">
+          {% csrf_token %}
+          <input type="text" name="identifier" class="form-control" style="font-size:0.8rem;padding:0.4rem 0.6rem;background:var(--bg);" placeholder="Child's email or username" required>
+          <button type="submit" class="btn btn-primary" style="padding:0.4rem 0.6rem;font-size:0.8rem;justify-content:center;inline-size:100%;border-radius:var(--radius-sm);">Link Account</button>
+        </form>
+        <div style="margin-block-start:0.5rem; text-align:center; color:var(--text-muted); font-size:0.75rem;">— or —</div>
+        <form method="post" action="{% url 'generate_invite_link' %}" style="margin-block-start:0.5rem;">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-outline" style="padding:0.4rem 0.6rem;font-size:0.8rem;justify-content:center;inline-size:100%;border-radius:var(--radius-sm);">Link a Child (Generate Link)</button>
+        </form>
+        
+        {% if request.session.last_invite_link %}
+        <div style="margin-block-start:0.75rem;padding:0.5rem;background:var(--surface);border:1px dashed var(--accent);border-radius:var(--radius-sm);font-size:0.75rem;">
+          <p style="font-weight:700;color:var(--accent);">Last Shareable Link:</p>
+          <p style="word-break:break-all;color:var(--text-muted);margin-block-start:0.15rem;">{{ request.session.last_invite_link }}</p>
+          <button type="button" class="btn btn-outline" style="padding:0.2rem 0.4rem;font-size:0.7rem;inline-size:100%;justify-content:center;margin-block-start:0.25rem;" onclick="navigator.clipboard.writeText('{{ request.session.last_invite_link }}').then(() => alert('Copied invitation link!'));">Copy</button>
+        </div>
+        {% endif %}
       </aside>
       <div class="dash-main">
         <h3 style="font-weight:700;margin-block-end:1.5rem;">Children's Balances</h3>
@@ -245,9 +365,78 @@
             </div>
           </div>
           {% empty %}
-          <p style="color:var(--text-muted);">No children linked yet. Ask your child to add you from their account.</p>
+          <p style="color:var(--text-muted);">No children linked yet. Send an invite using the account linking tool in the sidebar or share an invitation link.</p>
           {% endfor %}
         </div>
+
+        <!-- ══ LESSON REQUESTS SECTION ═════════════════════════ -->
+        {% if pending_session_requests %}
+        <div style="background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-block-end:1.5rem;">
+          <h3 style="font-weight:700;margin-block-end:1rem;font-size:1.1rem;">Incoming Lesson Requests</h3>
+          <ul style="padding:0;margin:0;display:flex;flex-direction:column;gap:0.75rem;list-style:none;">
+            {% for s in pending_session_requests %}
+              <li style="display:flex;justify-content:space-between;align-items:center;padding:0.75rem 1rem;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);flex-wrap:wrap;gap:0.5rem;">
+                <div>
+                  Request for child <strong>{{ s.student.profile.user.get_full_name|default:s.student.profile.user.username }}</strong>:
+                  Teacher <strong>{{ s.teacher.profile.user.get_full_name|default:s.teacher.profile.user.username }}</strong> requested a lesson in <strong>{{ s.subject.name_en }}</strong> on {{ s.scheduled_at|date:"d M Y, H:i" }} ({{ s.duration_minutes }} mins).
+                </div>
+                <div style="display:flex;gap:0.5rem;">
+                  <form method="post" action="{% url 'accept_session' session_id=s.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary" style="padding:0.35rem 0.75rem;font-size:0.82rem;border-radius:var(--radius-sm);cursor:pointer;">Accept</button>
+                  </form>
+                  <form method="post" action="{% url 'reject_session' session_id=s.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline" style="padding:0.35rem 0.75rem;font-size:0.82rem;border-radius:var(--radius-sm);border-color:#ef4444;color:#ef4444;cursor:pointer;">Decline</button>
+                  </form>
+                </div>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+
+        <!-- ══ CONNECTION REQUESTS SECTION ══════════════════════ -->
+        {% if incoming_requests %}
+        <div style="background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-block-start:1.5rem;">
+          <h3 style="font-weight:700;margin-block-end:1rem;font-size:1.1rem;">Incoming Connection Requests</h3>
+          <ul style="padding:0;margin:0;display:flex;flex-direction:column;gap:0.75rem;list-style:none;">
+            {% for r in incoming_requests %}
+              <li style="display:flex;justify-content:space-between;align-items:center;padding:0.75rem 1rem;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-sm);flex-wrap:wrap;gap:0.5rem;">
+                <div>
+                  <strong>{{ r.sender.get_full_name|default:r.sender.username }}</strong> ({{ r.sender.profile.get_role_display }}) wants to link accounts.
+                </div>
+                <div style="display:flex;gap:0.5rem;">
+                  <form method="post" action="{% url 'accept_link_request' request_id=r.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary" style="padding:0.35rem 0.75rem;font-size:0.82rem;border-radius:var(--radius-sm);cursor:pointer;">Accept</button>
+                  </form>
+                  <form method="post" action="{% url 'reject_link_request' request_id=r.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline" style="padding:0.35rem 0.75rem;font-size:0.82rem;border-radius:var(--radius-sm);border-color:#ef4444;color:#ef4444;cursor:pointer;">Decline</button>
+                  </form>
+                </div>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+
+        {% if outgoing_requests %}
+        <div style="background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:1.5rem;margin-block-start:1.5rem;">
+          <h3 style="font-weight:700;margin-block-end:0.5rem;font-size:1rem;">Pending Link Requests</h3>
+          <ul style="padding:0;margin:0;display:flex;flex-direction:column;gap:0.5rem;list-style:none;">
+            {% for r in outgoing_requests %}
+              <li style="display:flex;justify-content:space-between;align-items:center;font-size:0.85rem;color:var(--text-muted);flex-wrap:wrap;gap:0.5rem;">
+                <span>Sent to: <strong>{% if r.receiver %}{{ r.receiver.get_full_name|default:r.receiver.username }}{% else %}{{ r.receiver_email }}{% endif %}</strong> (Awaiting confirmation)</span>
+                {% if not r.receiver %}
+                  <button type="button" class="btn btn-outline" style="padding:0.2rem 0.5rem;font-size:0.75rem;" onclick="navigator.clipboard.writeText('{{ request.scheme }}://{{ request.get_host }}{% url 'accept_invite_link' %}?token={{ r.token }}').then(() => alert('Copied invite link!'));">Copy Invite Link</button>
+                {% endif %}
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
       </div>
     </div>
     {% endif %}
